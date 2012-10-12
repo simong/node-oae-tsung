@@ -24,9 +24,14 @@ var TsungUtil = require('./lib/util');
 
 var optimist = require('optimist')
         .usage('Usage: $0 -o <output dir> -d <data format dir>')
+
         .alias('o', 'output-dir')
         .describe('o', 'The directory in which the output Tsung package should be generated.')
-        .default('o', util.format('./tsung-%s', new Date().getTime()));
+        .default('o', util.format('./tsung-%s', new Date().getTime()))
+
+        .alias('d', 'dtd')
+        .describe('d', 'The location of the Tsung XML DTD.')
+        .default('d', '/opt/local/share/tsung/tsung-1.0.dtd');
 var argv = optimist.argv;
 
 if (argv['help']) {
@@ -34,7 +39,8 @@ if (argv['help']) {
 }
 
 var config = {
-    'loglevel': 'notice',
+    'dtdLocation': argv.d,
+    'logLevel': 'notice',
     'version': '1.0',
     'dumpTraffic': false
 };
@@ -158,7 +164,7 @@ var promptPhases = function(callback, i) {
                                 var newUsers = parseInt(answer, 10);
                                 if (newUsers > 0) {
                                     runner.addPhase(time, phaseUnit, newUsers, usersUnit);
-                                    rl.question('Add another phase? [y/N]', function(answer) {
+                                    rl.question('Add another phase? [y/N] ', function(answer) {
                                         if (answer === 'y') {
                                             promptPhases(callback, i+1);
                                         } else {

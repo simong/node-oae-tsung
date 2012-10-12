@@ -48,7 +48,7 @@
       <transaction name="tx_{{name}}">
       {{#requests}}  <request{{#subst}} subst="{{subst}}"{{/subst}}>{{#variables}}
           <dyn_variable name="{{name}}" {{attr}}="{{expression}}"/>{{/variables}}
-          <http url="{{{url}}}" method="{{method}}" version="1.1" {{#contents}}contents="{{{content}}}"{{/contents}} />
+          <http url="{{{url}}}" method="{{method}}" version="1.1" {{#contents}}contents="{{{content}}}" {{/contents}}/>
         </request>
       {{/requests}}</transaction>{{/seconds}}
       {{#seconds}}<thinktime value="{{seconds}}" random="{{isRandom}}"/>
