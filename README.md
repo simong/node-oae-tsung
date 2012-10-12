@@ -4,9 +4,9 @@ This module can be used to generate Tsung performance tests for Hilary.
 
 ## Instructions
 
-First, install this module globally:
+First, install this module globally (you'll need git installed):
 
-`npm install -g http://github.com/mrvisser/node-oae-tsung`
+`npm install -g git://github.com/mrvisser/node-oae-tsung`
 
 Now, assuming global NPM module binaries end up on your PATH, if you run:
 
