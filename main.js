@@ -20,14 +20,11 @@ var util = require('util');
 var wrench = require('wrench');
 var TsungUtil = require('./lib/util');
 
-var millis = new Date().getTime();
-
 var optimist = require('optimist')
         .usage('Usage: $0 -o <output dir> -d <data format dir>')
-
         .alias('o', 'output-dir')
         .describe('o', 'The directory in which the output Tsung package should be generated.')
-        .default('o', util.format('./tsung-%s', millis));
+        .default('o', util.format('./tsung-%s', new Date().getTime()));
 var argv = optimist.argv;
 
 if (argv['help']) {
