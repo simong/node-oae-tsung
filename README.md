@@ -1,4 +1,4 @@
-node-oae-tsung
-==============
+# OAE Tsung Runner Module
 
-Tsung runner module for OAE
+This module can be used to generate Tsung performance tests for Hilary.
+
