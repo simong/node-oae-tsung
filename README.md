@@ -2,16 +2,24 @@
 
 This module can be used to generate Tsung performance tests for Hilary.
 
-## Instructions
+**Prerequisites:**
 
-First, install this module globally (you'll need git installed):
+* You have (nodejs)[http://nodejs.org/] installed
+* You have (tsung)[http://tsung.erlang-projects.org/] installed
+* You have generated OAE data with the (OAE Model Loader)[http://github.com/sakaiproject/OAE-model-loader] (Hilary branch) project
+
+## Basic Instructions
+
+### 1. Install this module
 
 `npm install -g git://github.com/mrvisser/node-oae-tsung`
 
-Now, assuming global NPM module binaries end up on your PATH, if you run:
+After installation, make sure `oae-tsung` binary is on your PATH.
 
-`oae-tsung`
+### 2. Run oae-tsung
 
-You will get the interactive prompt to generate a very simple test case. Use `standard` as the suite (more suites would be available in the `suites/` directory of this repo). Run `oae-tsung --help` to get more options.
+Run `oae-tsung --help` to start. If your test uses data that was generated from the OAE-model-loader, point `-s` to the `scripts/` directory that loaded that content.
 
-To configure data for the test, have a look at the instructions in the `config/` readme to learn how to set up dynamic variables and CSV data that can be used to drive the performance test. You can clone the repository, update the config, and run `node main.js` for custom tests.
+### 3. Run Tsung
+
+The utility will let you know which directory contains the Tsung test package. `cd` to that package and run `tsung -f tsung.xml start` to run the Tsung test.

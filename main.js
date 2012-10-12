@@ -125,9 +125,24 @@ var generateDataConfiguration = function() {
  * @param {Function} callback Invoked when the user has set up the suite
  */
 var promptSuite = function(callback) {
-    rl.question("What suite would you like to run? ", function(answer) {
-        suite = answer;
-        callback();
+    fs.readdir(__dirname + '/suites', function(err, files) {
+        if (files.length === 1) {
+            suite = files[0];
+            console.log('Using suite: %s', suite);
+            return callback();
+        }
+
+        // we have multiple suites, choose one
+        console.log('Available test suites:');
+        for (var i = 0; i < files.length; i++) {
+            console.log('[%s] %s', i, files[i]);
+        }
+
+        rl.question("Which suite number would you like to run? [0-" + (files.length-1) + "] ", function(answer) {
+            suite = files[answer];
+            console.log('Using suite: %s', suite);
+            callback();
+        });
     });
 }
 
