@@ -7,5 +7,8 @@
         "optimist": "latest",
         "temp": "latest",
         "wrench": "latest"
+    },
+    "bin": {
+        "oae-tsung": "./main.js"
     }
 }
