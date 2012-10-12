@@ -23,7 +23,17 @@ var wrench = require('wrench');
 var TsungUtil = require('./lib/util');
 
 var optimist = require('optimist')
-        .usage('Usage: $0 -o <output dir> -d <data format dir>')
+        .usage('Usage: $0 -o <output dir>')
+
+        .alias('h', 'help')
+        .describe('h', 'Show this help information.')
+
+        .alias('s', 'source-dir')
+        .describe('s', 'The directory that contains the source data used to load content into the target system.')
+
+        .alias('b', 'batches')
+        .describe('b', 'If using source data, this specifies how many batches of that data should be aggregated into CSV.')
+        .default('b', 1)
 
         .alias('o', 'output-dir')
         .describe('o', 'The directory in which the output Tsung package should be generated.')
@@ -34,7 +44,7 @@ var optimist = require('optimist')
         .default('d', '/opt/local/share/tsung/tsung-1.0.dtd');
 var argv = optimist.argv;
 
-if (argv['help']) {
+if (argv.h) {
     return console.log(optimist.help());
 }
 
@@ -46,6 +56,7 @@ var config = {
 };
 
 var outputRoot = argv.o;
+var scriptsDir = argv.s;
 
 var suite = null;
 var runner = new tsung.Tsung(config);
@@ -55,6 +66,18 @@ var rl = readline.createInterface({
   'input': process.stdin,
   'output': process.stdout
 });
+
+/**
+ * Validate the parameters in the current session to try and pro-actively detect issues. This will throw an exception if an issue
+ * is found.
+ */
+var validateSession = function() {
+    // sanity check the specified scripts directory. If there is not atleast one batch of users, something isn't right
+    var batchCheck = scriptsDir + '/users/0.txt';
+    if (scriptsDir && !fs.existsSync(batchCheck)) {
+        throw new Error('The source script directory does not even have one batch of users (' + batchCheck + ' does not exist).');
+    }
+}
 
 /**
  * Parses all the data format files from the specified data directory. There should be a number of files with extension
@@ -69,6 +92,7 @@ var generateDataConfiguration = function() {
         var dataConfig = require('./config/data.json');
     } catch (err) {
         // no data config. this is fine I guess.
+        console.log(err);
         return;
     }
         
@@ -194,8 +218,26 @@ var promptPhases = function(callback, i) {
 };
 
 var packageTestRunner = function(xml, callback) {
+    // output the tsung XML file
     wrench.mkdirSyncRecursive(outputRoot, 0777);
-    fs.writeFile(util.format('%s/tsung.xml', outputRoot), xml, 'utf-8', callback);
+    fs.writeFile(util.format('%s/tsung.xml', outputRoot), xml, 'utf-8', function(err) {
+        if (err) {
+            return callback(err);
+        }
+
+        // copy the source scripts for posterity if they were specified
+        if (scriptsDir) {
+            var gendata = require('./lib/gendata');
+            var outputScriptsDir = outputRoot + '/scripts';
+            var outputDataDir = outputRoot + '/data';
+
+            // copy the scripts to the output location
+            wrench.copyDirSyncRecursive(scriptsDir, outputScriptsDir);
+
+            // generate the CSV files based on the source scripts
+            gendata.generateCsvData(argv.b, outputScriptsDir, outputDataDir, callback);
+        }
+    });
 }
 
 var printErr = function(err, msg) {
@@ -204,14 +246,15 @@ var printErr = function(err, msg) {
     console.log(err.stack);
 }
 
-// first parse and build the data model
+// fail early as aggressively as we can before the user spends time on an interactive prompt.
+validateSession();
 generateDataConfiguration();
 
 // then gather user information
 promptSuite(function() {
     TsungUtil.generateTestsForSuite(runner, suite, function(err) {
         if (err) {
-            return printErr('Error generating tests for suite.');
+            return printErr(err, 'Error generating tests for suite.');
         }
         promptClient(function() {
             promptServer(function() {
@@ -220,7 +263,7 @@ promptSuite(function() {
                     runner.toXml(function(xml) {
                         packageTestRunner(xml, function(err) {
                             if (err) {
-                                return printErr('Error packaging up the test runner.', err);
+                                return printErr(err, 'Error packaging up the test runner.');
                             }
                             console.log('Test successfully generated in %s', outputRoot);
                         });
