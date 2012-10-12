@@ -24,7 +24,7 @@ module.exports.test = function(runner, probability) {
     var session = runner.addSession('my_profile', probability);
 
     // The user logs in .. 
-    User.login(session);
+    User.login(session, '%%_users_username%%', '%%_users_password%%');
 
     // .. and goes straight to the dashboard page.
     Dashboard.load(session);
