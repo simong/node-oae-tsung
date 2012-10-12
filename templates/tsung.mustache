@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "{{dtdlocation}}" []>
+<tsung loglevel="{{loglevel}}" version="{{version}}" dumptraffic="{{dumptraffic}}">
+
+  <!-- Each client that will be running Tsung during the test -->
+  <clients>
+    {{#client}}<client host="{{host}}" use_controller_vm="{{useControllerVM}}" maxusers="{{maxUsers}}" />{{/client}}
+  </clients>
+
+  <!-- Each remote server that Tsung should performance test against. Only one would be needed if you have a load balancer. -->
+  <servers>
+    {{#server}}<server host="{{host}}" port="{{port}}" type="tcp" />{{/server}}
+  </servers>
+
+  <!-- Describe how load will be ramped up to your application over time -->
+  <load>
+    {{#arrivalphase}}<arrivalphase phase="{{id}}" duration="{{duration}}" unit="{{unit}}">
+      <users arrivalrate="{{newUsers}}" unit="{{newUsersUnit}}" />
+    </arrivalphase>{{/arrivalphase}}
+  </load>
+
+  <!-- Additional testing options -->
+  <options>
+
+    <!-- How to distribute user-agents among Tsung sessions -->
+    <option type="ts_http" name="user_agent">
+      <user_agent probability="80">Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050513 Galeon/1.3.21</user_agent>
+      <user_agent probability="20">Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4</user_agent>
+    </option>
+
+    {{#fileserver}}<option name="file_server" id="{{id}}" value="{{path}}" />
+    {{/fileserver}}
+  </options>
+
+  <sessions>
+    {{#session}}<session name="{{name}}" probability="{{probability}}" type="ts_http">
+      {{#fileserver}}<setdynvars sourcetype="file" fileid="{{id}}" delimiter="{{delimiter}}" order="{{order}}">
+        {{#vars}}<var name="{{name}}" />
+        {{/vars}}
+      </setdynvars>{{/fileserver}}{{#dynvarstring}}
+      <setdynvars sourcetype="random_string" length="{{length}}">
+        <var name="{{name}}" />
+      </setdynvars>{{/dynvarstring}}{{#dynvarnumber}}
+      <setdynvars sourcetype="random_number" start="{{start}}" end="{{end}}">
+        <var name="{{name}}" />
+      </setdynvars>
+      {{/dynvarnumber}}{{#actions}}{{^seconds}}
+      <transaction name="tx_{{name}}">
+      {{#requests}}  <request{{#subst}} subst="{{subst}}"{{/subst}}>{{#variables}}
+          <dyn_variable name="{{name}}" {{attr}}="{{expression}}"/>{{/variables}}
+          <http url="{{{url}}}" method="{{method}}" version="1.1" {{#contents}}contents="{{{content}}}"{{/contents}} />
+        </request>
+      {{/requests}}</transaction>{{/seconds}}
+      {{#seconds}}<thinktime value="{{seconds}}" random="{{isRandom}}"/>
+      {{/seconds}}{{/actions}}
+    </session>
+    {{/session}}
+  </sessions>
+</tsung>

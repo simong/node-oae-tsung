@@ -1,0 +1,11 @@
+{
+    "name": "oae-tsung",
+    "version": "0.0.1",
+    "main": "main.js",
+    "dependencies": {
+        "mu2": "latest",
+        "optimist": "latest",
+        "temp": "latest",
+        "wrench": "latest"
+    }
+}
