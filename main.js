@@ -168,7 +168,7 @@ var promptServer = function(callback) {
         var server = answer.split(':');
         if (server.length !== 2 || !parseInt(server[1], 10)) {
             console.log('Please provide a valid server.');
-            promptServer();
+            promptServer(callback);
         } else {
             runner.addServer(server[0], server[1]);
             rl.question('Add another server? [y/N] ', function(answer) {
