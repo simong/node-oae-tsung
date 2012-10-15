@@ -1,7 +1,52 @@
 {
     "files": {
         "users": {
-            "vars": ["users_username", "users_password", "users_group"],
+            "vars": ["users_id", "users_username", "users_password"],
+            "order": "random"
+        },
+        "public_groups": {
+            "vars": [
+                "public_groups_0",
+                "public_groups_1",
+                "public_groups_2",
+                "public_groups_3",
+                "public_groups_4",
+                "public_groups_5",
+                "public_groups_6",
+                "public_groups_7",
+                "public_groups_8",
+                "public_groups_9"
+            ],
+            "order": "random"
+        },
+        "public_content": {
+            "vars": [
+                "public_content_0",
+                "public_content_1",
+                "public_content_2",
+                "public_content_3",
+                "public_content_4",
+                "public_content_5",
+                "public_content_6",
+                "public_content_7",
+                "public_content_8",
+                "public_content_9"
+            ],
+            "order": "random"
+        },
+        "public_users": {
+            "vars": [
+                "public_user_0",
+                "public_user_1",
+                "public_user_2",
+                "public_user_3",
+                "public_user_4",
+                "public_user_5",
+                "public_user_6",
+                "public_user_7",
+                "public_user_8",
+                "public_user_9"
+            ],
             "order": "random"
         }
     },
