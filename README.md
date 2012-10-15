@@ -12,7 +12,7 @@ This module can be used to generate Tsung performance tests for Hilary.
 
 ### 1. Install this module
 
-`npm install -g git://github.com/mrvisser/node-oae-tsung`
+`npm install -g git://github.com/sakaiproject/node-oae-tsung`
 
 After installation, make sure `oae-tsung` binary is on your PATH.
 
