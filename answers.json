@@ -1,0 +1,13 @@
+{
+    "suite": "general_interest",
+    "clients": ["localhost"],
+    "servers": ["localhost:2001"],
+    "phases": [
+        {
+            "durationUnit": "second",
+            "duration": 10,
+            "arrivalUnit": "second",
+            "arrival": 10
+        }
+    ]
+}

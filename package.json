@@ -6,7 +6,7 @@
         "mkdirp": "latest",
         "mu2": "latest",
         "optimist": "latest",
-        "temp": "latest",
+        "underscore": "latest",
         "wrench": "latest"
     },
     "bin": {

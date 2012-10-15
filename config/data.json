@@ -40,16 +40,16 @@
         },
         "public_users": {
             "vars": [
-                "public_user_0",
-                "public_user_1",
-                "public_user_2",
-                "public_user_3",
-                "public_user_4",
-                "public_user_5",
-                "public_user_6",
-                "public_user_7",
-                "public_user_8",
-                "public_user_9"
+                "public_users_0",
+                "public_users_1",
+                "public_users_2",
+                "public_users_3",
+                "public_users_4",
+                "public_users_5",
+                "public_users_6",
+                "public_users_7",
+                "public_users_8",
+                "public_users_9"
             ],
             "order": "random"
         },

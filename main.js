@@ -15,6 +15,7 @@
  * permissions and limitations under the License.
  */
 
+var _ = require('underscore');
 var fs = require('fs');
 var readline = require('readline');
 var tsung = require('./lib/tsung');
@@ -39,6 +40,9 @@ var optimist = require('optimist')
         .describe('o', 'The directory in which the output Tsung package should be generated.')
         .default('o', util.format('./tsung-%s', new Date().getTime()))
 
+        .alias('a', 'answers')
+        .describe('a', 'A JSON file containing the answers to the interactive prompt questions.')
+
         .alias('d', 'dtd')
         .describe('d', 'The location of the Tsung XML DTD.')
         .default('d', '/opt/local/share/tsung/tsung-1.0.dtd');
@@ -54,6 +58,20 @@ var config = {
     'version': '1.0',
     'dumpTraffic': false
 };
+
+// parse the answers if specified
+var answers = null;
+if (argv.a) {
+    var answersJson = fs.readFileSync(argv.a, 'utf-8');
+    try {
+        answers = JSON.parse(answersJson);
+    } catch (err) {
+        console.log('Specified answers file contains invalid JSON.');
+        console.log(err);
+        console.log(err.stack);
+        process.exit(1);
+    }
+}
 
 var outputRoot = argv.o;
 var scriptsDir = argv.s;
@@ -125,6 +143,12 @@ var generateDataConfiguration = function() {
  * @param {Function} callback Invoked when the user has set up the suite
  */
 var promptSuite = function(callback) {
+
+    if (answers && answers.suite) {
+        suite = answers.suite;
+        return callback();
+    }
+
     fs.readdir(__dirname + '/suites', function(err, files) {
         if (files.length === 1) {
             suite = files[0];
@@ -152,6 +176,11 @@ var promptSuite = function(callback) {
  * @param {Function} callback Invoked when the user has finished specifying their input
  */
 var promptClient = function(callback) {
+    if (answers && answers.clients) {
+        runner.addClient(answers.clients.join(','), true, 10000);
+        return callback();
+    }
+
     rl.question("What clients are you driving your tests from? [hostname1,hostname2,...]? ", function(answer) {
         runner.addClient(answer, true, 10000);
         callback();
@@ -164,6 +193,20 @@ var promptClient = function(callback) {
  * @param {Function} callback Invoked when the user has finished specifying their input
  */
 var promptServer = function(callback) {
+    if (answers && answers.servers) {
+        for (var i = 0; i < answers.servers.length; i++) {
+            var server = answers.servers[i].split(':');
+            if (server.length !== 2 || !parseInt(server[1], 10)) {
+                console.log('Invalid server specified: %s', server.join(':'));
+                process.exit(1);
+            } else {
+                runner.addServer(server[0], server[1]);
+            }
+        }
+
+        return callback();
+    }
+
     rl.question("What server are you running this test against? [hostname:port] ", function(answer) {
         var server = answer.split(':');
         if (server.length !== 2 || !parseInt(server[1], 10)) {
@@ -189,6 +232,39 @@ var promptServer = function(callback) {
  * @param {Number}      i           The index of the current phase. If starting anew, don't specify this parameter
  */
 var promptPhases = function(callback, i) {
+
+    var validUnits = ['hour', 'minute', 'second'];
+
+    if (answers && answers.phases) {
+        var phases = answers.phases;
+        for (var i = 0; i < phases.length; i++) {
+            var phase = phases[i];
+            var durationUnit = phase.durationUnit;
+            var duration = phase.duration;
+            var arrivalUnit = phase.arrivalUnit;
+            var arrival = phase.arrival;
+
+            if (!durationUnit || !_.contains(validUnits, durationUnit)) {
+                console.log('Invalid duration unit: %s', durationUnit);
+                process.exit(1);
+            } else if (!duration || parseInt(duration) <= 0) {
+                console.log('Invalid duration time: %s', duration);
+                process.exit(1);
+            } else if (!arrivalUnit || !_.contains(validUnits, arrivalUnit)) {
+                console.log('Invalid arrivalUnit: %s', arrivalUnit);
+                process.exit(1);
+            } else if (!arrival || isNaN(arrival) || parseInt(arrival) < 0) {
+                console.log('Invalid arrival time: %s', arrival);
+                process.exit(1);
+            } else {
+                runner.addPhase(duration, durationUnit, arrival, arrivalUnit);
+            }
+        }
+
+        return callback();
+    }
+
+    // no canned answers, continue
     i = i || 1;
     rl.question('Phase ' + i + ': In what unit should the phase time be measured? [hour, minute, second] ', function(answer) {
         if (answer === 'hour' || answer === 'minute' || answer === 'second') {

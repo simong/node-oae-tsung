@@ -15,7 +15,6 @@
 
 var Content = require('../lib/api/content');
 var Dashboard = require('../lib/api/dashboard');
-var Library = require('../lib/api/library');
 var User = require('../lib/api/user');
 
 
@@ -32,16 +31,16 @@ module.exports.test = function(runner, probability) {
     var session = runner.addSession('content', probability);
 
     // The user logs in .. 
-    var user = User.login(session, '%%_users_username%%', '%%_users_password%%');
+    User.login(session, '%%_users_username%%', '%%_users_password%%');
 
     // .. and goes straight to the dashboard page.
-    Dashboard.load(session, user.id);
+    Dashboard.load(session, '%%_users_id%%');
 
     // When he hits the dashboard, he waits for a bit.
     session.think(5);
 
     // and then goes to his library
-    Library.load(session, user.id);
+    User.library(session, '%%_users_id%%');
 
     // He creates a new link..
     var content = Content.createLink(session, '%%_random_string_short%%', '%%_random_string_medium%%', 'public', 'http://www.google.com', null, null);
