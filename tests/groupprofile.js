@@ -25,18 +25,17 @@ module.exports.test = function(runner, probability) {
 
     // The user logs in .. 
     User.login(session, '%%_users_username%%', '%%_users_password%%');
-
     // .. and goes straight to the dashboard page.
     Dashboard.load(session);
 
     // When he hits the dashboard he waits for a bit.
     session.think(5);
 
+    // TODO: Note that this sequence of Group.load and Group.members would likely both be all part of Group.load
     // and then goes to a group profile page.
-    Group.load(session, '%%_users_group%%');
-
+    Group.load(session, '%%_users_private_access_group_member_0%%');
     // where he gets the group members
-    Group.members(session, '%%_users_group%%');
+    Group.members(session, '%%_users_private_access_group_member_0%%');
 
     // and looks at the page for a bit.
     session.think(3);

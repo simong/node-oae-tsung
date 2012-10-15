@@ -1,7 +1,11 @@
 {
     "files": {
         "users": {
-            "vars": ["users_id", "users_username", "users_password"],
+            "vars": [
+                "users_id",
+                "users_username",
+                "users_password"
+            ],
             "order": "random"
         },
         "public_groups": {
@@ -46,6 +50,15 @@
                 "public_user_7",
                 "public_user_8",
                 "public_user_9"
+            ],
+            "order": "random"
+        },
+        "users_private_access": {
+            "vars": [
+                "users_private_access_id",
+                "users_private_access_username",
+                "users_private_access_password",
+                "users_private_access_group_member_0"
             ],
             "order": "random"
         }

@@ -32,16 +32,16 @@ module.exports.test = function(runner, probability) {
     var session = runner.addSession('content', probability);
 
     // The user logs in .. 
-    User.login(session, '%%_users_username%%', '%%_users_password%%');
+    var user = User.login(session, '%%_users_username%%', '%%_users_password%%');
 
     // .. and goes straight to the dashboard page.
-    Dashboard.load(session, '%%_loggedin_user_id%%');
+    Dashboard.load(session, user.id);
 
     // When he hits the dashboard, he waits for a bit.
     session.think(5);
 
     // and then goes to his library
-    Library.load(session, '%%_loggedin_user_id%%');
+    Library.load(session, user.id);
 
     // He creates a new link..
     var content = Content.createLink(session, '%%_random_string_short%%', '%%_random_string_medium%%', 'public', 'http://www.google.com', null, null);
@@ -50,7 +50,7 @@ module.exports.test = function(runner, probability) {
     Content.load(session, content.id);
 
     // .. where he then shares it with one of his groups.
-    Content.share(session, content.id, '%%_users_group%%')
+    Content.share(session, content.id, '%%_users_private_access_group_member_0%%')
 
     // and then logs out.
     User.logout(session);
