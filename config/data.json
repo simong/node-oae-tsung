@@ -53,12 +53,40 @@
             ],
             "order": "random"
         },
-        "users_private_access": {
+        "private_groups": {
             "vars": [
-                "users_private_access_id",
-                "users_private_access_username",
-                "users_private_access_password",
-                "users_private_access_group_member_0"
+                "private_groups_user_id",
+                "private_groups_user_username",
+                "private_groups_user_password",
+                "private_groups_access_depth0_0",
+                "private_groups_access_depth0_1",
+                "private_groups_access_depth0_2",
+                "private_groups_access_depth0_3",
+                "private_groups_access_depth1_0"
+            ],
+            "order": "random"
+        },
+        "private_content": {
+            "vars": [
+                "private_content_user_id",
+                "private_content_user_username",
+                "private_content_user_password",
+                "private_content_access_depth0_0",
+                "private_content_access_depth0_1",
+                "private_content_access_depth0_2",
+                "private_content_access_depth0_3",
+                "private_content_access_depth0_4",
+                "private_content_access_depth0_5",
+                "private_content_access_depth0_6",
+                "private_content_access_depth0_7",
+                "private_content_access_depth0_8",
+                "private_content_access_depth0_9",
+                "private_content_access_depth1_0",
+                "private_content_access_depth1_1",
+                "private_content_access_depth1_2",
+                "private_content_access_depth1_3",
+                "private_content_access_depth2_0",
+                "private_content_access_depth2_1"
             ],
             "order": "random"
         }

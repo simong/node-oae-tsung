@@ -1,2 +1,8 @@
-groupprofile,50
-content,50
+general_interest_content_anon,10
+general_interest_content_auth,10
+general_interest_group_anon,10
+general_interest_group_auth,10
+general_interest_user_anon,10
+general_interest_user_auth,10
+private_groups_interest,30
+study_group_content,30

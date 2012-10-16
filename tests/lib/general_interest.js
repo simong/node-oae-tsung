@@ -31,7 +31,7 @@ module.exports.doGeneralInterestBrowseGroup = function(session, i) {
     var user1 = '%%_public_users_' + (i+1) + '%%';
 
     // load the group profile
-    Group.load(session, group0);
+    Group.profile(session, group0);
     session.think(4);
 
     // click on the group memberships
@@ -43,13 +43,13 @@ module.exports.doGeneralInterestBrowseGroup = function(session, i) {
     session.think(2);
 
     // click on a content item and read for a bit
-    Content.load(session, content0);
+    Content.profile(session, content0);
     session.think(45);
 
     // I go back to the group library and open another content item
     Group.library(session, group0);
     session.think(2);
-    Content.load(session, content1);
+    Content.profile(session, content1);
     session.think(30);
 
     // I go back to the group library, then switch to its members
@@ -107,7 +107,7 @@ module.exports.doGeneralInterestBrowseUser = function(session, i) {
     session.think(7);
 
     // I load a content item from the library and study it
-    Content.load(session, content0);
+    Content.profile(session, content0);
     session.think(60);
 
     // I go back to the user library
@@ -115,7 +115,7 @@ module.exports.doGeneralInterestBrowseUser = function(session, i) {
     session.think(6);
 
     // I load another content item from the library and study it
-    Content.load(session, content1);
+    Content.profile(session, content1);
     session.think(45);
 
     // I go back to the user library
@@ -132,13 +132,13 @@ module.exports.doGeneralInterestBrowseUser = function(session, i) {
     session.think(7);
 
     // I visit a group that they belong to
-    Group.load(session, group0);
+    Group.profile(session, group0);
     session.think(15);
 
     // I go back to the user memberships and load another group
     User.myMemberships(session, user0);
     session.think(2);
-    Group.load(session, group1);
+    Group.profile(session, group1);
     session.think(8);
 
     // I go back to the user memberships then click to the profile
@@ -163,7 +163,7 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     var user1 = '%%_public_users_' + (i+1) + '%%';
 
     // load the content and read
-    Content.load(session, content0);
+    Content.profile(session, content0);
     session.think(45);
 
     // Then I view the content members
@@ -171,7 +171,7 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     session.think(7);
 
     // load a group associated to the content and read a bit
-    Group.load(session, group0);
+    Group.profile(session, group0);
     session.think(10);
 
     // go back to the content members
@@ -179,11 +179,11 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     session.think(4);
 
     // go back to the content profile
-    Content.load(session, content0);
+    Content.profile(session, content0);
     session.think(15);
 
     // view a related content item
-    Content.load(session, content1);
+    Content.profile(session, content1);
     session.think(30);
 
     // view the members of that item
@@ -191,7 +191,7 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     session.think(8);
 
     // go back to the content profile
-    Content.load(session, content1);
+    Content.profile(session, content1);
     session.think(2);
 
     // go back to the content members of the first content item
@@ -207,7 +207,7 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     session.think(2);
 
     // go back to the content profile
-    Content.load(session, content0);
+    Content.profile(session, content0);
     session.think(25);
 
 }
