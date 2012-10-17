@@ -32,6 +32,24 @@
     {{/fileserver}}
   </options>
 
+  <!--
+
+    {{#tsungStats}}
+    SUITE STATS:
+
+      For every 100 concurrent users running, you will have ~{{requestsPerSecond100}}req/s
+    {{/tsungStats}}
+
+    SESSION STATS:
+      {{#session}}
+        Name:         {{name}}
+        Probability:  {{probability}}
+        Requests:     {{requests}}
+        Duration:     ~{{totalThink}}s
+        Req/s:        ~{{requestsPerSecond}}/s
+
+      {{/session}}
+  -->
   <sessions>
     {{#session}}<session name="{{name}}" probability="{{probability}}" type="ts_http">
       {{#fileserver}}<setdynvars sourcetype="file" fileid="{{id}}" delimiter="{{delimiter}}" order="{{order}}">
