@@ -1,5 +1,5 @@
 {
-    "suite": "general_interest",
+    "suite": "standard",
     "clients": ["localhost"],
     "servers": ["localhost:2001"],
     "phases": [
