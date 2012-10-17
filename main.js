@@ -63,6 +63,10 @@ var config = {
     'dumpTraffic': false
 };
 
+process.on('uncaughtException', function(err) {
+    printErr(err, 'Uncaught Exception');
+});
+
 // parse the answers if specified
 var answers = null;
 if (argv.a) {

@@ -37,16 +37,18 @@
     {{#tsungStats}}
     SUITE STATS:
 
-      For every 100 concurrent users running, you will have ~{{requestsPerSecond100}}req/s
+      Requests/s (Weighted Average):      ~{{weightedAverageRequestsPerSecond}}/second
+      Session Length (Weighted Average):  ~{{weightedAverageSessionLength}} seconds
+      Maximum Session Length:             {{maxSessionLength}} seconds
     {{/tsungStats}}
 
     SESSION STATS:
       {{#session}}
         Name:         {{name}}
-        Probability:  {{probability}}
+        Probability:  {{probability}}%
         Requests:     {{requests}}
-        Duration:     ~{{totalThink}}s
-        Req/s:        ~{{requestsPerSecond}}/s
+        Duration:     ~{{totalThink}} seconds
+        Requests/s:   ~{{requestsPerSecond}}/second
 
       {{/session}}
   -->
