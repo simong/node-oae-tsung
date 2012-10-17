@@ -15,6 +15,10 @@
  * permissions and limitations under the License.
  */
 
+process.on('uncaughtException', function(err) {
+  console.log(err);
+});
+
 var _ = require('underscore');
 var fs = require('fs');
 var readline = require('readline');
