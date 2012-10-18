@@ -14,11 +14,6 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-
-process.on('uncaughtException', function(err) {
-  console.log(err);
-});
-
 var _ = require('underscore');
 var fs = require('fs');
 var readline = require('readline');
@@ -26,6 +21,16 @@ var tsung = require('./lib/tsung');
 var util = require('util');
 var wrench = require('wrench');
 var TsungUtil = require('./lib/util');
+
+var printErr = function(err, msg) {
+    console.log(msg);
+    console.log(err);
+    console.log(err.stack);
+}
+
+process.on('uncaughtException', function(err) {
+    printErr(err, 'Uncaught Exception');
+});
 
 var optimist = require('optimist')
         .usage('Usage: $0 -o <output dir>')
@@ -333,12 +338,6 @@ var packageTestRunner = function(xml, callback) {
             gendata.generateCsvData(argv.b, outputScriptsDir, outputDataDir, callback);
         }
     });
-}
-
-var printErr = function(err, msg) {
-    console.log(msg);
-    console.log(err);
-    console.log(err.stack);
 }
 
 // fail early as aggressively as we can before the user spends time on an interactive prompt.
