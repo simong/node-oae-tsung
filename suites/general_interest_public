@@ -4,3 +4,5 @@ general_interest_group_anon
 general_interest_group_auth
 general_interest_user_anon
 general_interest_user_auth
+general_interest_term_anon
+general_interest_term_auth

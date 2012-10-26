@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 var User = require('../lib/api/user');
-var GeneralInterest = require('./lib/general_interest');
+var GeneralInterest = require('./lib/general_interest_public');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user visiting the application with

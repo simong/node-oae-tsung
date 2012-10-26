@@ -16,23 +16,20 @@ var User = require('../lib/api/user');
 var GeneralInterest = require('./lib/general_interest_public');
 
 /**
- * Generate a user session against the runner that similuates an authenticated user visiting the application with general interest
- * in a group.
+ * Generate a user session against the runner that similuates an authenticated user visiting the application with general interest in
+ * searching / browsing a particular term / search phrase
  *
- * @param {Tsung}   runner          The Tsung runner to build the session on
- * @param {Number}  probability     The probability that this session will execute
+ * @param {Tsung}       runner              The Tsung runner to build the session on
+ * @param {Number}      probability         The probability that this session will execute
  */
 module.exports.test = function(runner, probability) {
     probability = probability || 100;
-    // Create a new session.
-    var session = runner.addSession('general_interest_group_anon', probability);
+    var session = runner.addSession('general_interest_term_auth', probability);
 
     User.login(session, '%%_users_username%%', '%%_users_password%%');
 
-    // perform several general interest iterations to form a realistic session length.
-    // makes the total session length roughly 20min, of user having general interest in a group and cascading to others
-    for (var i = 0; i < 5; i++) {
-        GeneralInterest.doGeneralInterestBrowseGroup(session, i);
+    for (var i = 0; i < 2; i++) {
+        GeneralInterest.doGeneralInterestBrowseSearchTerm(session, i);
     }
 
     User.logout(session);

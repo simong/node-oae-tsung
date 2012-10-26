@@ -12,6 +12,7 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+var Search = require('../../lib/api/search');
 var Content = require('../../lib/api/content');
 var Group = require('../../lib/api/group');
 var User = require('../../lib/api/user');
@@ -22,7 +23,7 @@ var User = require('../../lib/api/user');
  * @param {Session} session The Tsung user session to perform the browsing on
  * @param {Number}  i       The iteration number to use
  */
-module.exports.doGeneralInterestBrowseGroup = function(session, i) {
+var doGeneralInterestBrowseGroup = module.exports.doGeneralInterestBrowseGroup = function(session, i) {
     var group0 = '%%_public_groups_' + i + '%%';
     var group1 = '%%_public_groups_' + (i+1) + '%%';
     var content0 = '%%_public_content_' + i + '%%';
@@ -34,7 +35,7 @@ module.exports.doGeneralInterestBrowseGroup = function(session, i) {
     Group.profile(session, group0);
     session.think(4);
 
-    // click on the group memberships
+    // click on the group members
     Group.members(session, group0);
     session.think(8);
 
@@ -90,13 +91,12 @@ module.exports.doGeneralInterestBrowseGroup = function(session, i) {
  * @param {Session} session The Tsung user session to perform the browsing on
  * @param {Number}  i       The iteration number to use
  */
-module.exports.doGeneralInterestBrowseUser = function(session, i) {
+var doGeneralInterestBrowseUser = module.exports.doGeneralInterestBrowseUser = function(session, i) {
     var group0 = '%%_public_groups_' + i + '%%';
     var group1 = '%%_public_groups_' + (i+1) + '%%';
     var content0 = '%%_public_content_' + i + '%%';
     var content1 = '%%_public_content_' + (i+1) + '%%';
     var user0 = '%%_public_users_' + i + '%%';
-    var user1 = '%%_public_users_' + (i+1) + '%%';
 
     // load the group profile
     User.profile(session, user0);
@@ -145,7 +145,7 @@ module.exports.doGeneralInterestBrowseUser = function(session, i) {
     User.myMemberships(session, user0);
     session.think(1);
     User.profile(session, user0);
-
+    session.think(5);
 }
 
 /**
@@ -154,13 +154,12 @@ module.exports.doGeneralInterestBrowseUser = function(session, i) {
  * @param {Session} session The Tsung user session to perform the browsing on
  * @param {Number}  i       The iteration number to use
  */
-module.exports.doGeneralInterestBrowseContent = function(session, i) {
+var doGeneralInterestBrowseContent = module.exports.doGeneralInterestBrowseContent = function(session, i) {
     var group0 = '%%_public_groups_' + i + '%%';
     var group1 = '%%_public_groups_' + (i+1) + '%%';
     var content0 = '%%_public_content_' + i + '%%';
     var content1 = '%%_public_content_' + (i+1) + '%%';
     var user0 = '%%_public_users_' + i + '%%';
-    var user1 = '%%_public_users_' + (i+1) + '%%';
 
     // load the content and read
     Content.profile(session, content0);
@@ -209,5 +208,135 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     // go back to the content profile
     Content.profile(session, content0);
     session.think(25);
+
+}
+
+/**
+ * Browse public data focused around general interest of a search term.
+ *
+ * @param {Session} session The Tsung user session to perform the browsing on
+ * @param {Number}  i       The iteration number to use
+ */
+var doGeneralInterestBrowseSearchTerm = module.exports.doGeneralInterestBrowseSearchTerm = function(session, i) {
+    
+    var contentSingle = '%%_public_content_' + i + '%%';
+
+    // load the general search page
+    Search.load(session);
+    session.think(3);
+
+    // perform a search
+    Search.searchGeneral(session, 'all', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(4);
+
+    // browse down a page
+    Search.searchGeneral(session, 'all', {
+        q: '%%_search_term_30%%',
+        from: 10,
+        size: 10
+    });
+    session.think(3);
+
+    // switch to content search
+    Search.searchGeneral(session, 'content', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(6);
+
+    // click an item and read a bit
+    Content.profile(session, contentSingle);
+    session.think(10);
+
+    // return to the search page
+    Search.searchGeneral(session, 'content', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(2);
+
+    // scroll down a page
+    Search.searchGeneral(session, 'content', {
+        q: '%%_search_term_30%%',
+        from: 10,
+        size: 10
+    });
+    session.think(4);
+
+    // browse a content item and related content
+    doGeneralInterestBrowseContent(session, i);
+
+    // go back to search from the top
+    Search.load(session, { q: '%%_search_term_30%%' });
+    session.think(6);
+
+    // switch to content again and begin to scroll
+    Search.searchGeneral(session, 'content', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(1);
+    Search.searchGeneral(session, 'content', {
+        q: '%%_search_term_30%%',
+        from: 10,
+        size: 10
+    });
+    session.think(1);
+    Search.searchGeneral(session, 'content', {
+        q: '%%_search_term_30%%',
+        from: 20,
+        size: 10
+    });
+
+    // nothing of interest, switch to groups
+    Search.searchGeneral(session, 'group', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(5);
+
+    // browse a group
+    doGeneralInterestBrowseGroup(session, i);
+
+    // return to search again from the top visor
+    Search.searchGeneral(session, { q: '%%_search_term_30%%' });
+    session.think(3);
+
+    // switch to groups
+    Search.searchGeneral(session, 'group', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(4);
+
+    // browse another group
+    doGeneralInterestBrowseGroup(session, i + 1);
+
+    // return to search again from the top visor
+    Search.searchGeneral(session, { q: '%%_search_term_30%%' });
+    session.think(3);
+
+    // switch to groups and scroll
+    Search.searchGeneral(session, 'group', {
+        q: '%%_search_term_30%%',
+        from: 0,
+        size: 10
+    });
+    session.think(2);
+    Search.searchGeneral(session, 'group', {
+        q: '%%_search_term_30%%',
+        from: 10,
+        size: 10
+    });
+    session.think(8);
 
 }

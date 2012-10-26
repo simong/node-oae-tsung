@@ -12,7 +12,7 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-var GeneralInterest = require('./lib/general_interest');
+var GeneralInterest = require('./lib/general_interest_public');
 
 /**
  * Generate a user session against the runner that similuates an anonymous user visiting the application with general interest

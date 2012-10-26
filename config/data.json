@@ -89,6 +89,12 @@
                 "private_content_access_depth2_1"
             ],
             "order": "random"
+        },
+        "search_terms_30": {
+            "vars": [
+                "search_term_30"
+            ],
+            "order": "random"
         }
     },
     "strings": {
