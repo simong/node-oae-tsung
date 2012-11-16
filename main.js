@@ -54,7 +54,12 @@ var optimist = require('optimist')
 
         .alias('d', 'dtd')
         .describe('d', 'The location of the Tsung XML DTD.')
-        .default('d', '/opt/local/share/tsung/tsung-1.0.dtd');
+        .default('d', '/opt/local/share/tsung/tsung-1.0.dtd')
+
+        .alias('m', 'max-users')
+        .describe('m', 'The max number of users to allow at one time.')
+        .default('m', 10000);
+
 var argv = optimist.argv;
 
 if (argv.h) {
@@ -84,6 +89,7 @@ if (argv.a) {
 
 var outputRoot = argv.o;
 var scriptsDir = argv.s;
+var maxUsers = argv.m;
 
 var suite = null;
 var runner = new tsung.Tsung(config);
@@ -186,7 +192,7 @@ var promptSuite = function(callback) {
  */
 var promptClient = function(callback) {
     if (answers && answers.clients) {
-        runner.addClient(answers.clients.join(','), true, 10000);
+        runner.addClient(answers.clients.join(','), true, maxUsers);
         return callback();
     }
 
