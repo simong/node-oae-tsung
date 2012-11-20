@@ -101,5 +101,11 @@
         "random_string_long": {
             "length": 500
         }
+    },
+    "uploadableFiles": {
+        "default": {
+            "path": "./data/speech.txt",
+            "boundary": "----WebKitFormBoundaryAgsBl3dabqdWBaIh"
+        }
     }
 }
