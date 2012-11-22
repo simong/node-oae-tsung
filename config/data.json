@@ -38,6 +38,21 @@
             ],
             "order": "random"
         },
+        "downloadable_content": {
+            "vars": [
+                "downloadable_content_0",
+                "downloadable_content_1",
+                "downloadable_content_2",
+                "downloadable_content_3",
+                "downloadable_content_4",
+                "downloadable_content_5",
+                "downloadable_content_6",
+                "downloadable_content_7",
+                "downloadable_content_8",
+                "downloadable_content_9"
+            ],
+            "order": "random"
+        },
         "public_users": {
             "vars": [
                 "public_users_0",

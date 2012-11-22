@@ -27,18 +27,22 @@ module.exports.test = function(runner, probability) {
     probability = probability || 100;
     // Create a new session.
     var session = runner.addSession('create_content', probability);
-
     var user = User.login(session, '%%_users_username%%', '%%_users_password%%');
 
     // The user goes to his library.
     User.library(session, user.id);
 
-    // He selects a new file to upload..
+    // He selects a new file and uploads it.
     session.think(4);
+    var vars = Content.createFile(session, 'default');
 
-    // Create the actual file.
-    Content.createFile(session, 'default');
+    // He looks at it to make sure everything is correct
+    Content.profile(session, vars.id);
+    session.think(15);
+
+    // Download it
+    Content.download(session, vars.id);
 
     // That's it for now
     User.logout(session);
-}
+};

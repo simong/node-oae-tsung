@@ -158,7 +158,7 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     var group0 = '%%_public_groups_' + i + '%%';
     var group1 = '%%_public_groups_' + (i+1) + '%%';
     var content0 = '%%_public_content_' + i + '%%';
-    var content1 = '%%_public_content_' + (i+1) + '%%';
+    var downloadableContent = '%%_downloadable_content_' + i + '%%';
     var user0 = '%%_public_users_' + i + '%%';
     var user1 = '%%_public_users_' + (i+1) + '%%';
 
@@ -182,17 +182,21 @@ module.exports.doGeneralInterestBrowseContent = function(session, i) {
     Content.profile(session, content0);
     session.think(15);
 
-    // view a related content item
-    Content.profile(session, content1);
+    // view a related content item (which is a file)
+    Content.profile(session, downloadableContent);
     session.think(30);
 
     // view the members of that item
-    Content.members(session, content1);
+    Content.members(session, downloadableContent);
     session.think(8);
 
     // go back to the content profile
-    Content.profile(session, content1);
+    Content.profile(session, downloadableContent);
     session.think(2);
+
+    // looks promising, download it.
+    Content.download(session, downloadableContent)
+    session.think(20);
 
     // go back to the content members of the first content item
     Content.members(session, content0);
