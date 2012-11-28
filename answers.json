@@ -1,7 +1,7 @@
 {
     "suite": "standard",
     "clients": ["localhost"],
-    "servers": ["localhost:2001"],
+    "servers": ["localhost"],
     "phases": [
     
         {

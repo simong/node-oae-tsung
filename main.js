@@ -16,6 +16,7 @@
  */
 var _ = require('underscore');
 var fs = require('fs');
+var path = require('path');
 var readline = require('readline');
 var tsung = require('./lib/tsung');
 var util = require('util');
@@ -54,7 +55,12 @@ var optimist = require('optimist')
 
         .alias('d', 'dtd')
         .describe('d', 'The location of the Tsung XML DTD.')
-        .default('d', '/opt/local/share/tsung/tsung-1.0.dtd');
+        .default('d', '/opt/local/share/tsung/tsung-1.0.dtd')
+
+        .alias('m', 'max-users')
+        .describe('m', 'The max number of users to allow at one time.')
+        .default('m', 10000);
+
 var argv = optimist.argv;
 
 if (argv.h) {
@@ -84,6 +90,7 @@ if (argv.a) {
 
 var outputRoot = argv.o;
 var scriptsDir = argv.s;
+var maxUsers = argv.m;
 
 var suite = null;
 var runner = new tsung.Tsung(config);
@@ -144,6 +151,13 @@ var generateDataConfiguration = function() {
             runner.addRandomNumberGenerator(id, dataConfig.numbers[id].start, dataConfig.numbers[id].end);
         }
     }
+
+    // Files that can be uploaded.
+    if (dataConfig.uploadableFiles) {
+        for (var id in dataConfig.uploadableFiles) {
+            runner.addUploadableFile(id, dataConfig.uploadableFiles[id].path, dataConfig.uploadableFiles[id].boundary);
+        }
+    }
 }
 
 /**
@@ -186,7 +200,7 @@ var promptSuite = function(callback) {
  */
 var promptClient = function(callback) {
     if (answers && answers.clients) {
-        runner.addClient(answers.clients.join(','), true, 10000);
+        runner.addClient(answers.clients.join(','), true, maxUsers);
         return callback();
     }
 
@@ -318,6 +332,9 @@ var promptPhases = function(callback, i) {
 };
 
 var packageTestRunner = function(xml, callback) {
+    // Wipe the whole output dir if we had something in there.
+    wrench.rmdirSyncRecursive(outputRoot, true);
+
     // output the tsung XML file
     wrench.mkdirSyncRecursive(outputRoot, 0777);
     fs.writeFile(util.format('%s/tsung.xml', outputRoot), xml, 'utf-8', function(err) {
@@ -333,6 +350,15 @@ var packageTestRunner = function(xml, callback) {
 
             // copy the scripts to the output location
             wrench.copyDirSyncRecursive(scriptsDir, outputScriptsDir);
+
+            // copy the uploadable files to the data dir.
+            wrench.mkdirSyncRecursive(outputDataDir, 0777);
+            var uploadableFiles = runner.getUploadableFiles();
+            for (var key in uploadableFiles) {
+                var file = uploadableFiles[key].path
+                var filename = path.basename(file);
+                fs.createReadStream(file).pipe(fs.createWriteStream(outputDataDir + '/' + filename));
+            }
 
             // generate the CSV files based on the source scripts
             gendata.generateCsvData(argv.b, outputScriptsDir, outputDataDir, callback);

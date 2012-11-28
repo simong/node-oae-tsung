@@ -7,7 +7,7 @@
         "mu2": "latest",
         "optimist": "latest",
         "underscore": "latest",
-        "wrench": "latest"
+        "wrench": "1.4.1"
     },
     "bin": {
         "oae-tsung": "./main.js"
