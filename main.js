@@ -219,7 +219,7 @@ var promptServer = function(callback) {
     if (answers && answers.servers) {
         for (var i = 0; i < answers.servers.length; i++) {
             var server = answers.servers[i].split(':');
-            if (server.length !== 2 || !parseInt(server[1], 10)) {
+            if (!server[0]) {
                 console.log('Invalid server specified: %s', server.join(':'));
                 process.exit(1);
             } else {
