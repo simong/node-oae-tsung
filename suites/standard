@@ -1,7 +1,7 @@
 general_interest_term_anon,10
-general_interest_term_auth,25
-general_interest_content_auth,10
-general_interest_group_auth,10
-general_interest_user_auth,10
-private_groups_interest,30
-study_group_content,30
+general_interest_term_auth,20
+general_interest_content_auth,8
+general_interest_group_auth,8
+general_interest_user_auth,8
+private_groups_interest,23
+study_group_content,23

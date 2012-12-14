@@ -25,7 +25,7 @@ var GeneralInterest = require('./lib/general_interest_public');
 module.exports.test = function(runner, probability) {
     probability = probability || 100;
     // Create a new session.
-    var session = runner.addSession('general_interest_group_anon', probability);
+    var session = runner.addSession('general_interest_group_auth', probability);
 
     User.login(session, '%%_users_username%%', '%%_users_password%%');
 
