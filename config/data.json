@@ -90,6 +90,16 @@
             ],
             "order": "random"
         },
+        "edit_groups": {
+            "vars": [
+                "edit_group_groupid",
+                "edit_group_managerid",
+                "edit_group_managerpass",
+                "edit_group_memberid",
+                "edit_group_nonmemberid"
+            ],
+            "order": "random"
+        },
         "search_terms_30": {
             "vars": [
                 "search_term_30"
