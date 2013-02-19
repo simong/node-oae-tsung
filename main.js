@@ -24,10 +24,14 @@ var wrench = require('wrench');
 var TsungUtil = require('./lib/util');
 
 var printErr = function(err, msg) {
-    console.log(msg);
-    console.log(err);
-    var stack = err.stack || new Error().stack;
-    console.log(stack);
+    if (msg && msg.indexOf('Maximum call stack size exceeded')) {
+        console.error('ERROR: The maximum call stack size exceeded, probably because your tsung.xml file is huge. Run again with option --stack_size=2048 (or more if necessary). See node --v8-options for more info on stack_size');
+    } else {
+        console.log(msg);
+        console.log(err);
+        var stack = err.stack || new Error().stack;
+        console.log(stack);
+    }
 };
 
 process.on('uncaughtException', function(err) {
