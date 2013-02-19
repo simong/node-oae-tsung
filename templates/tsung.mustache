@@ -51,6 +51,13 @@
         Requests/s:   ~{{requestsPerSecond}}/second
 
       {{/session}}
+
+    {{#tsungStats}}
+    TRANSACTION STATS:
+      {{#transactionScore}}
+        {{name}}: {{score}}%{{/transactionScore}}
+    {{/tsungStats}}
+
   -->
   <sessions>
     {{#session}}<session name="{{name}}" probability="{{probability}}" type="ts_http">

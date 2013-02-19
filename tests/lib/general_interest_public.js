@@ -3,7 +3,7 @@
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
- * 
+ *
  *     http://www.osedu.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -12,9 +12,10 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-var Search = require('../../lib/api/search');
+
 var Content = require('../../lib/api/content');
 var Group = require('../../lib/api/group');
+var Search = require('../../lib/api/search');
 var User = require('../../lib/api/user');
 
 /**
@@ -83,7 +84,7 @@ var doGeneralInterestBrowseGroup = module.exports.doGeneralInterestBrowseGroup =
 
     // complete.
 
-}
+};
 
 /**
  * Browse public data focused around general interest of a user.
@@ -146,7 +147,7 @@ var doGeneralInterestBrowseUser = module.exports.doGeneralInterestBrowseUser = f
     session.think(1);
     User.profile(session, user0);
     session.think(5);
-}
+};
 
 /**
  * Browse public data focused around general interest of a content item.
@@ -209,7 +210,7 @@ var doGeneralInterestBrowseContent = module.exports.doGeneralInterestBrowseConte
     Content.profile(session, content0);
     session.think(25);
 
-}
+};
 
 /**
  * Browse public data focused around general interest of a search term.
@@ -339,4 +340,4 @@ var doGeneralInterestBrowseSearchTerm = module.exports.doGeneralInterestBrowseSe
     });
     session.think(8);
 
-}
+};

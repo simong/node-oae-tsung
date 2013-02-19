@@ -90,13 +90,54 @@
             ],
             "order": "random"
         },
-        "edit_groups": {
+        "group_add_users": {
             "vars": [
-                "edit_group_groupid",
-                "edit_group_managerid",
-                "edit_group_managerpass",
-                "edit_group_memberid",
-                "edit_group_nonmemberid"
+                "group_add_users_manager_username",
+                "group_add_users_manager_password",
+                "group_add_users_group_id",
+                "group_add_users_user_0",
+                "group_add_users_user_1",
+                "group_add_users_user_2"
+            ]
+        },
+        "group_add_groups": {
+            "vars": [
+                "group_add_groups_manager_username",
+                "group_add_groups_manager_password",
+                "group_add_groups_group_id",
+                "group_add_groups_group_0",
+                "group_add_groups_group_1",
+                "group_add_groups_group_2"
+            ]
+        },
+        "content_add_users": {
+            "vars": [
+                "content_add_users_manager_username",
+                "content_add_users_manager_password",
+                "content_add_users_content_id",
+                "content_add_users_user_0",
+                "content_add_users_user_1",
+                "content_add_users_user_2",
+                "content_add_users_user_3",
+                "content_add_users_user_4"
+            ]
+        },
+        "content_add_groups": {
+            "vars": [
+                "content_add_groups_manager_username",
+                "content_add_groups_manager_password",
+                "content_add_groups_content_id",
+                "content_add_groups_group_0",
+                "content_add_groups_group_1",
+                "content_add_groups_group_2"
+            ]
+        },
+        "manage_content_groups": {
+            "vars": [
+                "manage_content_groups_manager_username",
+                "manage_content_groups_manager_password",
+                "manage_content_groups_group_id",
+                "manage_content_groups_content_id"
             ],
             "order": "random"
         },

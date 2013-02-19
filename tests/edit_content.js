@@ -13,12 +13,12 @@
  * permissions and limitations under the License.
  */
 
+var Content = require('../lib/api/content');
 var GeneralInterest = require('./lib/general_interest_public');
-var Group = require('../lib/api/group');
 var User = require('../lib/api/user');
 
 /**
- * Generate a user session against the runner that similuates an authenticated user editing group memberships
+ * Generate a user session against the runner that similuates an authenticated user editing a content item
  *
  * @param {Tsung}   runner          The Tsung runner to build the session on
  * @param {Number}  probability     The probability that this session will execute
@@ -26,43 +26,34 @@ var User = require('../lib/api/user');
 module.exports.test = function(runner, probability) {
     probability = probability || 100;
     // Create a new session.
-    var session = runner.addSession('edit_group', probability);
+    var session = runner.addSession('edit_content', probability);
 
     var user = User.login(session, '%%_manage_content_groups_manager_username%%', '%%_manage_content_groups_manager_password%%');
 
     // Browse around a bit
-    GeneralInterest.doGeneralInterestBrowseGroup(session, 0);
+    GeneralInterest.doGeneralInterestBrowseContent(session, 0);
     session.think(4);
 
-    var groupId = '%%_manage_content_groups_group_id%%';
+    var contentId = '%%_manage_content_groups_content_id%%';
 
     // Find a group and make a couple updates
-    Group.profile(session, groupId);
+    Content.profile(session, contentId);
     session.think(3);
 
-    var updates = {
-        'displayName': 'displayName changed by tsung test',
-        'description': 'description changed by tsung test'
-    };
-    Group.update(session, groupId, updates);
-    Group.profile(session, groupId);
+    var updates = {'displayName': 'displayName changed by tsung test'};
+    Content.update(session, contentId, updates);
+    Content.profile(session, contentId);
     session.think(5);
 
-    updates = {
-        'displayName': 'displayName changed a second time by tsung test',
-        'description': 'description changed a second time by tsung test'
-    };
-    Group.update(session, groupId, updates);
-    Group.profile(session, groupId);
+    updates = {'displayName': 'displayName changed a second time by tsung test'};
+    Content.update(session, contentId, updates);
+    Content.profile(session, contentId);
     session.think(2);
 
     // Come back around and edit a bit more
-    updates = {
-        'displayName': '%%_random_string_short%%',
-        'description': '%%_random_string_long%%'
-    };
-    Group.update(session, groupId, updates);
-    Group.profile(session, groupId);
+    updates = {'displayName': '%%_random_string_short%%'};
+    Content.update(session, contentId, updates);
+    Content.profile(session, contentId);
     session.think(5);
 
     User.logout(session);
