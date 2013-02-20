@@ -5,7 +5,7 @@
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
- * 
+ *
  *     http://www.osedu.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -24,10 +24,15 @@ var wrench = require('wrench');
 var TsungUtil = require('./lib/util');
 
 var printErr = function(err, msg) {
-    console.log(msg);
-    console.log(err);
-    console.log(err.stack);
-}
+    if (msg && msg.indexOf('Maximum call stack size exceeded')) {
+        console.error('ERROR: The maximum call stack size exceeded, probably because your tsung.xml file is huge. Run again with option --stack_size=2048 (or more if necessary). See node --v8-options for more info on stack_size');
+    } else {
+        console.log(msg);
+        console.log(err);
+        var stack = err.stack || new Error().stack;
+        console.log(stack);
+    }
+};
 
 process.on('uncaughtException', function(err) {
     printErr(err, 'Uncaught Exception');
@@ -122,8 +127,9 @@ var validateSession = function() {
  * data files.
  */
 var generateDataConfiguration = function() {
+    var dataConfig = null;
     try {
-        var dataConfig = require('./config/data.json');
+        dataConfig = require('./config/data.json');
     } catch (err) {
         // no data config. this is fine I guess.
         console.log(err);
@@ -158,7 +164,7 @@ var generateDataConfiguration = function() {
             runner.addUploadableFile(id, dataConfig.uploadableFiles[id].path, dataConfig.uploadableFiles[id].boundary);
         }
     }
-}
+};
 
 /**
  * Prompts the user for the test suite to run.
@@ -336,7 +342,7 @@ var packageTestRunner = function(xml, callback) {
     wrench.rmdirSyncRecursive(outputRoot, true);
 
     // output the tsung XML file
-    wrench.mkdirSyncRecursive(outputRoot, 0777);
+    wrench.mkdirSyncRecursive(outputRoot, '0777');
     fs.writeFile(util.format('%s/tsung.xml', outputRoot), xml, 'utf-8', function(err) {
         if (err) {
             return callback(err);
@@ -352,10 +358,10 @@ var packageTestRunner = function(xml, callback) {
             wrench.copyDirSyncRecursive(scriptsDir, outputScriptsDir);
 
             // copy the uploadable files to the data dir.
-            wrench.mkdirSyncRecursive(outputDataDir, 0777);
+            wrench.mkdirSyncRecursive(outputDataDir, '0777');
             var uploadableFiles = runner.getUploadableFiles();
             for (var key in uploadableFiles) {
-                var file = uploadableFiles[key].path
+                var file = uploadableFiles[key].path;
                 var filename = path.basename(file);
                 fs.createReadStream(file).pipe(fs.createWriteStream(outputDataDir + '/' + filename));
             }
@@ -364,7 +370,7 @@ var packageTestRunner = function(xml, callback) {
             gendata.generateCsvData(argv.b, outputScriptsDir, outputDataDir, callback);
         }
     });
-}
+};
 
 // fail early as aggressively as we can before the user spends time on an interactive prompt.
 validateSession();
