@@ -75,7 +75,9 @@
       <transaction name="tx_{{name}}">
       {{#requests}}  <request{{#subst}} subst="{{subst}}"{{/subst}}>{{#variables}}
           <dyn_variable name="{{name}}" {{attr}}="{{expression}}"/>{{/variables}}
-          <http url="{{{url}}}" method="{{method}}" version="1.1" {{#contents}}contents="{{{content}}}" {{/contents}} {{#from_file}}contents_from_file="{{path}}" content_type="{{type}}" {{/from_file}} />
+          <http url="{{{url}}}" method="{{method}}" version="1.1" {{#contents}}contents="{{{content}}}" {{/contents}} {{#from_file}}contents_from_file="{{path}}" content_type="{{type}}" {{/from_file}}>{{#referer}}
+              <http_header name="Referer" value="{{referer}}" />
+          {{/referer}}</http>
         </request>
       {{/requests}}</transaction>{{/seconds}}
       {{#seconds}}<thinktime value="{{seconds}}" random="{{isRandom}}"/>
