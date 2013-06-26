@@ -4,6 +4,7 @@
     "main": "main.js",
     "dependencies": {
         "mkdirp": "latest",
+        "mu2": "latest",
         "handlebars": "latest",
         "optimist": "latest",
         "underscore": "latest",
