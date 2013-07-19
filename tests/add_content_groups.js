@@ -13,10 +13,14 @@
  * permissions and limitations under the License.
  */
 
+var ApiUtil = require('../lib/api/util');
+var Container = require('../lib/api/container');
 var Content = require('../lib/api/content');
-var GeneralInterest = require('./lib/general_interest_public');
 var Search = require('../lib/api/search');
 var User = require('../lib/api/user');
+
+var GeneralInterest = require('./lib/general_interest_public');
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user creating a group
@@ -26,69 +30,70 @@ var User = require('../lib/api/user');
  */
 module.exports.test = function(runner, probability) {
     probability = probability || 100;
+
     // Create a new session.
     var session = runner.addSession('add_content_groups', probability);
 
-    var user = User.login(session, '%%_content_add_groups_manager_username%%', '%%_content_add_groups_manager_password%%');
+    Login.visitLoginRedirect(session, '%%_content_add_groups_manager_username%%', '%%_content_add_groups_manager_username%%', '%%_content_add_groups_manager_password%%');
 
     GeneralInterest.doGeneralInterestBrowseContent(session, 0);
 
     // Eventually come around to the group I manage
     var contentId = '%%_content_add_groups_content_id%%';
-    Content.profile(session, contentId);
+    Content.profile(session, contentId, {'pageLoad': true});
     session.think(2);
 
-    // Go to the members list
-    Content.members(session, contentId);
+    // Manage the access of the content item
+    Content.manageAccess(session, contentId);
     session.think(6);
 
-    // Add 2 users
-    Content.updateMembers(session, contentId, {'%%_content_add_groups_group_0%%': 'viewer'});
+    // Add a user
+    ApiUtil.searchMemberAutosuggest(session);
+    Content.manageAccessUpdate(session, contentId, null, {'%%_content_add_groups_group_0%%': 'viewer'});
     session.think(2);
-
-    Content.profile(session, contentId);
-    session.think(3);
 
     // Browse twice more
     GeneralInterest.doGeneralInterestBrowseContent(session, 2);
     GeneralInterest.doGeneralInterestBrowseContent(session, 4);
 
-    // Go back to the group and add the 3rd member
-    Content.profile(session, contentId);
-    session.think(2);
+    // Go back to the content item
+    Content.profile(session, contentId, {'pageLoad': true});
+    session.think(4);
 
-    // Go to the members list
-    Content.members(session, contentId);
-    session.think(6);
-
-    // Share with 2 other groups
-    Content.share(session, contentId, '%%_content_add_groups_group_1%%');
+    // Type in 2 differe users to share with, then share
+    ApiUtil.searchMemberAutosuggest(session);
     session.think(2);
-    Content.share(session, contentId, '%%_content_add_groups_group_2%%');
+    ApiUtil.searchMemberAutosuggest(session, null, 2);
+    session.think(4);
+    Content.share(session, contentId, ['%%_content_add_groups_group_1%%', '%%_content_add_groups_group_2%%']);
+    session.think(4);
 
     // Browse twice more
     GeneralInterest.doGeneralInterestBrowseContent(session, 6);
     GeneralInterest.doGeneralInterestBrowseContent(session, 8);
 
     // Come back to my group and remove the users I've added
-    Content.profile(session, contentId);
-    session.think(2);
+    Content.profile(session, contentId, {'pageLoad': true});
+    session.think(4);
 
-    // Go to the members list
-    Content.members(session, contentId);
+    // Go to the members list, scrolling through them to find them and remove them
+    Content.manageAccess(session, contentId);
+    session.think(4);
+
+    Content.membersScroll(session, contentId);
     session.think(6);
 
-    // Remove the users
+    Content.membersScroll(session, contentId);
+    session.think(6);
+
+    // Update the manage access pane
     var update = {
         '%%_content_add_groups_group_0%%': false,
         '%%_content_add_groups_group_1%%': false,
         '%%_content_add_groups_group_2%%': false
     };
-    Content.updateMembers(session, contentId, update);
-    session.think(2);
+    Content.manageAccessUpdate(session, contentId, null, update);
+    session.think(8);
 
-    Content.profile(session, contentId);
-    session.think(3);
-
-    User.logout(session);
+    Container.logout(session);
 };

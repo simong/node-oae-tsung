@@ -13,15 +13,15 @@
  * permissions and limitations under the License.
  */
 
-var Container = require('../lib/api/container');
+var Group = require('../lib/api/group');
+var Notifications = require('../lib/api/notifications');
 var User = require('../lib/api/user');
 
 var GeneralInterest = require('./lib/general_interest_public');
 var Login = require('./lib/login');
 
 /**
- * Generate a user session against the runner that similuates an authenticated user visiting the application with
- * general interest in a content item.
+ * Generate a user session against the runner that similuates an authenticated user creating a group
  *
  * @param {Tsung}   runner          The Tsung runner to build the session on
  * @param {Number}  probability     The probability that this session will execute
@@ -29,15 +29,10 @@ var Login = require('./lib/login');
 module.exports.test = function(runner, probability) {
     probability = probability || 100;
     // Create a new session.
-    var session = runner.addSession('general_interest_content_auth', probability);
+    var session = runner.addSession('test_notifications', probability);
 
-    Login.visitLoginRedirect(session, '%%_users_username%%', '%%_users_password%%');
+    Login.localLoginDashboard(session, 'u:cam:eTz-Mlycl5', 'batch0-lynn-brentari-108', 'caroline');
+    session.think(5);
 
-    // perform several general interest iterations to form a realistic session length.
-    // makes the total session length roughly 20min, of user having general interest in a group and cascading to others
-    for (var i = 0; i < 5; i++) {
-        GeneralInterest.doGeneralInterestBrowseContent(session, i);
-    }
-
-    Container.logout(session);
+    Group.profile(session, 'g:cam:PP5s6zjol5');
 };

@@ -13,10 +13,14 @@
  * permissions and limitations under the License.
  */
 
-var GeneralInterest = require('./lib/general_interest_public');
+var ApiUtil = require('../lib/api/util');
+var Container = require('../lib/api/container');
 var Group = require('../lib/api/group');
 var Search = require('../lib/api/search');
 var User = require('../lib/api/user');
+
+var GeneralInterest = require('./lib/general_interest_public');
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user creating a group
@@ -29,28 +33,39 @@ module.exports.test = function(runner, probability) {
     // Create a new session.
     var session = runner.addSession('add_group_users', probability);
 
-    var user = User.login(session, '%%_group_add_users_manager_username%%', '%%_group_add_users_manager_password%%');
+    Login.visitLoginRedirect(session, '%%_group_add_users_manager_username%%', '%%_group_add_users_manager_password%%');
 
     GeneralInterest.doGeneralInterestBrowseGroup(session, 0);
 
     // Eventually come around to the group I manage
     var groupId = '%%_group_add_users_group_id%%';
-    Group.profile(session, groupId);
+    Group.activity(session, groupId, {'pageLoad': true});
     session.think(2);
 
     // Go to the members list
     Group.members(session, groupId);
     session.think(6);
 
+    Group.manageAccess(session, groupId);
+    session.think(2);
+
     // Add 2 users
     var update = {
         '%%_group_add_users_user_0%%': 'member',
         '%%_group_add_users_user_1%%': 'member'
     };
-    Group.updateMembers(session, groupId, update);
+    
+    // Search for those users
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(3);
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(4);
+
+    Group.manageAccessUpdate(session, groupId, null, update);
     session.think(2);
 
-    Group.profile(session, groupId);
+    // View group activities
+    Group.activity(session, groupId);
     session.think(3);
 
     // Browse twice more
@@ -58,15 +73,22 @@ module.exports.test = function(runner, probability) {
     GeneralInterest.doGeneralInterestBrowseGroup(session, 4);
 
     // Go back to the group and add the 3rd member
-    Group.profile(session, groupId);
+    Group.activity(session, groupId, {'pageLoad': true});
     session.think(2);
 
     // Go to the members list
     Group.members(session, groupId);
     session.think(6);
 
+    // Manage access
+    Group.manageAccess(session, groupId);
+    session.think(3);
+
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(2);
+
     // Add the 3rd user
-    Group.updateMembers(session, groupId, {'%%_group_add_users_user_2%%': 'member'});
+    Group.manageAccessUpdate(session, groupId, null, {'%%_group_add_users_user_2%%': 'member'});
     session.think(2);
 
     // Browse twice more
@@ -74,11 +96,17 @@ module.exports.test = function(runner, probability) {
     GeneralInterest.doGeneralInterestBrowseGroup(session, 8);
 
     // Come back to my group and remove the users I've added
-    Group.profile(session, groupId);
+    Group.activity(session, groupId, {'pageLoad': true});
     session.think(2);
 
     // Go to the members list
     Group.members(session, groupId);
+    session.think(6);
+
+    Group.manageAccess(session, groupId);
+    session.think(8);
+
+    Group.membersScroll(session, groupId);
     session.think(6);
 
     // Remove the users
@@ -87,11 +115,11 @@ module.exports.test = function(runner, probability) {
         '%%_group_add_users_user_1%%': false,
         '%%_group_add_users_user_2%%': false
     };
-    Group.updateMembers(session, groupId, update);
+    Group.manageAccessUpdate(session, groupId, null, update);
     session.think(2);
 
-    Group.profile(session, groupId);
+    Group.activity(session, groupId);
     session.think(3);
 
-    User.logout(session);
+    Container.logout(session);
 };

@@ -1,15 +1,11 @@
 ------WebKitFormBoundaryAgsBl3dabqdWBaIh
-Content-Disposition: form-data; name="contentType"
+Content-Disposition: form-data; name="resourceSubType"
 
 file
 ------WebKitFormBoundaryAgsBl3dabqdWBaIh
-Content-Disposition: form-data; name="name"
+Content-Disposition: form-data; name="displayName"
 
 test
-------WebKitFormBoundaryAgsBl3dabqdWBaIh
-Content-Disposition: form-data; name="description"
-
-Test description
 ------WebKitFormBoundaryAgsBl3dabqdWBaIh
 Content-Disposition: form-data; name="visibility"
 

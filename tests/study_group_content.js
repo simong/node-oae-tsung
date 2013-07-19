@@ -3,7 +3,7 @@
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
- * 
+ *
  *     http://www.osedu.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -12,9 +12,13 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
+var Container = require('../lib/api/container');
 var Content = require('../lib/api/content');
 var Group = require('../lib/api/group');
 var User = require('../lib/api/user');
+
+var Login = require('./lib/login');
 
 /**
  * This test generates a user session that represents a user / student studying content that is shared privately from within a group.
@@ -39,7 +43,7 @@ module.exports.test = function(runner, probability) {
     // Create a new session.
     var session = runner.addSession('study_group_content', probability);
 
-    var userId = '%%_private_content_user_id%%';
+    var userId = '%%_current_user_id%%';
     var username = '%%_private_content_user_username%%';
     var password = '%%_private_content_user_password%%';
     var pubGroup0 = '%%_public_groups_0%%';
@@ -52,65 +56,77 @@ module.exports.test = function(runner, probability) {
     var pubContent2 = '%%_public_content_2%%';
     var pubContent3 = '%%_public_content_3%%';
 
-    User.login(session, username, password);
+    Login.visitLoginRedirect(session, username, password);
     session.think(3);
 
-    User.myMemberships(session, userId);
+    User.memberships(session, userId);
     session.think(5);
 
-    Group.profile(session, pubGroup0);
-    session.think(2);
+    Group.contentLibrary(session, pubGroup0, {'pageLoad': true});
+    session.think(5);
 
-    Group.library(session, pubGroup0);
-    session.think(3);
+    Group.contentLibraryScroll(session, pubGroup0);
+    session.think(2);
 
     // read for a bit.
     Content.profile(session, privContent0);
     session.think(45, true);
 
-    Group.library(session, pubGroup0);
+    // read a couple pages of comments
+    Content.profileScroll(session, privContent0);
+    session.think(15, true);
+
+    Content.profileScroll(session, privContent0);
+    session.think(2, true);
+
+    Content.profileScroll(session, privContent0);
+    session.think(15, true);
+
+    // Go back to the group library
+    Group.contentLibrary(session, pubGroup0, {'pageLoad': true});
     session.think(2);
 
     // read another piece of private content
-    Content.profile(session, privContent1);
+    Content.profile(session, privContent1, {'pageLoad': true});
     session.think(45, true);
 
     // digress to some related content
-    Content.profile(session, pubContent0);
+    Content.profile(session, pubContent0, {'pageLoad': true});
     session.think(10, true);
 
-    Content.profile(session, pubContent1);
+    Content.profile(session, pubContent1, {'pageLoad': true});
     session.think(10, true);
 
-    // go back to group through their profile
-    User.myMemberships(session, userId);
+    // go back to group through their home page
+    Container.home(session);
     session.think(2);
 
-    Group.profile(session, pubGroup0);
-    session.think(2);
-
-    Group.library(session, pubGroup0);
+    Group.contentLibrary(session, pubGroup0, {'pageLoad': true});
     session.think(5);
 
+    Group.contentLibraryScroll(session, pubGroup0);
+    session.think(4);
+
     // view another private content
-    Content.profile(session, privContent2);
+    Content.profile(session, privContent2, {'pageLoad': true});
     session.think(45, true);
 
-    Group.library(session, pubGroup0);
+    // Back to the group
+    Group.contentLibrary(session, pubGroup0, {'pageLoad': true});
     session.think(5);
 
     // one more
-    Content.profile(session, privContent3);
+    Content.profile(session, privContent3, {'pageLoad': true});
     session.think(45, true);
 
-    // digress
-    Content.profile(session, pubContent2);
-    session.think(10, true);
+    Content.profileScroll(session, privContent3);
+    session.think(15, true);
 
-    Content.profile(session, pubContent3);
+    // digress
+    Content.profile(session, pubContent2, {'pageLoad': true});
     session.think(10, true);
 
     // boring!
-    User.logout(session);
+    Container.logout(session);
 
-}
+};

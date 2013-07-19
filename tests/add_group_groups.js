@@ -13,10 +13,13 @@
  * permissions and limitations under the License.
  */
 
-var GeneralInterest = require('./lib/general_interest_public');
+var Container = require('../lib/api/container');
 var Group = require('../lib/api/group');
 var Search = require('../lib/api/search');
 var User = require('../lib/api/user');
+
+var GeneralInterest = require('./lib/general_interest_public');
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user creating a group
@@ -29,7 +32,7 @@ module.exports.test = function(runner, probability) {
     // Create a new session.
     var session = runner.addSession('add_group_groups', probability);
 
-    var user = User.login(session, '%%_group_add_groups_manager_username%%', '%%_group_add_groups_manager_password%%');
+    Login.visitLoginRedirect(session, '%%_group_add_groups_manager_username%%', '%%_group_add_groups_manager_password%%');
 
     GeneralInterest.doGeneralInterestBrowseGroup(session, 0);
 
@@ -93,5 +96,5 @@ module.exports.test = function(runner, probability) {
     Group.profile(session, groupId);
     session.think(3);
 
-    User.logout(session);
+    Container.logout(session);
 };

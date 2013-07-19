@@ -13,10 +13,14 @@
  * permissions and limitations under the License.
  */
 
+var ApiUtil = require('../lib/api/util');
+var Container = require('../lib/api/container');
 var Content = require('../lib/api/content');
-var GeneralInterest = require('./lib/general_interest_public');
 var Search = require('../lib/api/search');
 var User = require('../lib/api/user');
+
+var GeneralInterest = require('./lib/general_interest_public');
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user creating a group
@@ -29,62 +33,70 @@ module.exports.test = function(runner, probability) {
     // Create a new session.
     var session = runner.addSession('add_content_users', probability);
 
-    var user = User.login(session, '%%_content_add_users_manager_username%%', '%%_content_add_users_manager_password%%');
+    Login.visitLoginRedirect(session, '%%_content_add_users_manager_username%%', '%%_content_add_users_manager_password%%');
 
     GeneralInterest.doGeneralInterestBrowseContent(session, 0);
 
     // Eventually come around to the group I manage
     var contentId = '%%_content_add_users_content_id%%';
-    Content.profile(session, contentId);
+    Content.profile(session, contentId, {'pageLoad': true});
     session.think(2);
 
-    // Go to the members list
-    Content.members(session, contentId);
+    // Manage content access
+    Content.manageAccess(session, contentId);
     session.think(6);
 
-    // Add 2 users
+    // Add 2 users. Search for them both, then update them both on the content object
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(2);
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(5);
+
     var update = {
         '%%_content_add_users_user_0%%': 'viewer',
         '%%_content_add_users_user_1%%': 'viewer'
     };
-    Content.updateMembers(session, contentId, update);
+    Content.manageAccessUpdate(session, contentId, null, update);
     session.think(2);
-
-    Content.profile(session, contentId);
-    session.think(3);
 
     // Browse twice more
     GeneralInterest.doGeneralInterestBrowseContent(session, 2);
     GeneralInterest.doGeneralInterestBrowseContent(session, 4);
 
-    // Go back to the group and add the 3rd member
-    Content.profile(session, contentId);
+    // Go back to the content item
+    Content.profile(session, contentId, {'pageLoad': true});
     session.think(2);
-
-    // Go to the members list
-    Content.members(session, contentId);
-    session.think(6);
 
     // Share with 3 other users
-    Content.share(session, contentId, '%%_content_add_users_user_2%%');
-    session.think(2);
-    Content.share(session, contentId, '%%_content_add_users_user_3%%');
-    session.think(2);
-    Content.share(session, contentId, '%%_content_add_users_user_4%%');
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(3);
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(3);
+    ApiUtil.searchMemberAutosuggest(session);
+    session.think(3);
 
+    Content.share(session, contentId, ['%%_content_add_users_user_2%%', '%%_content_add_users_user_3%%', '%%_content_add_users_user_4%%']);
+    session.think(2);
+    
     // Browse twice more
     GeneralInterest.doGeneralInterestBrowseContent(session, 6);
     GeneralInterest.doGeneralInterestBrowseContent(session, 8);
 
     // Come back to my group and remove the users I've added
-    Content.profile(session, contentId);
+    Content.profile(session, contentId, {'pageLoad': true});
     session.think(2);
 
-    // Go to the members list
-    Content.members(session, contentId);
+    // Go to the members list, scroll to find the users and remove them from the list
+    Content.manageAccess(session, contentId);
     session.think(6);
 
-    // Remove the users
+    Content.membersScroll(session, contentId);
+    session.think(12);
+
+    Content.membersScroll(session, contentId);
+    session.think(8);
+
+    // Update the view
     update = {
         '%%_content_add_users_user_0%%': false,
         '%%_content_add_users_user_1%%': false,
@@ -92,11 +104,8 @@ module.exports.test = function(runner, probability) {
         '%%_content_add_users_user_3%%': false,
         '%%_content_add_users_user_4%%': false
     };
-    Content.updateMembers(session, contentId, update);
-    session.think(2);
+    Content.manageAccessUpdate(session, contentId, null, update);
+    session.think(8);
 
-    Content.profile(session, contentId);
-    session.think(3);
-
-    User.logout(session);
+    Container.logout(session);
 };

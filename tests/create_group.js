@@ -13,8 +13,11 @@
  * permissions and limitations under the License.
  */
 
+var Container = require('../lib/api/container');
 var Group = require('../lib/api/group');
 var User = require('../lib/api/user');
+
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user creating a group
@@ -24,14 +27,15 @@ var User = require('../lib/api/user');
  */
 module.exports.test = function(runner, probability) {
     probability = probability || 100;
+    
     // Create a new session.
     var session = runner.addSession('create_group', probability);
 
-    var user = User.login(session, '%%_users_username%%', '%%_users_password%%');
+    Login.visitLoginRedirect(session, '%%_users_username%%', '%%_users_password%%');
 
     // Creates a group that he manages, with 2 users as members
-    Group.create(session, '%%_random_string_short%%', '%%_random_string_short%%', '%%_random_string_medium%%', 'public', 'yes', [user.id], ['%%_public_users_0%%', '%%_public_users_1%%']);
+    Group.create(session, '%%_random_string_short%%', '%%_random_string_short%%', '%%_random_string_medium%%', 'public', 'yes', ['%%_current_user_id%%'], ['%%_public_users_0%%', '%%_public_users_1%%']);
 
     // That's it for now
-    User.logout(session);
+    Container.logout(session);
 };

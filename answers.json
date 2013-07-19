@@ -2,39 +2,13 @@
     "suite": "standard",
     "clients": ["localhost"],
     "servers": ["localhost"],
+    "dumpTraffic": true,
     "phases": [
-    
         {
-            "durationUnit": "minute",
-            "duration": 20,
+            "durationUnit": "second",
+            "duration": 30,
             "arrivalUnit": "second",
-            "arrival": 3.3
-        },
-        {
-            "durationUnit": "minute",
-            "duration": 10,
-            "arrivalUnit": "hour",
-            "arrival": 0.1
-        },
-        
-        {
-            "durationUnit": "minute",
-            "duration": 20,
-            "arrivalUnit": "second",
-            "arrival": 4.8
-        },
-        {
-            "durationUnit": "minute",
-            "duration": 10,
-            "arrivalUnit": "hour",
-            "arrival": 0.1
-        },
-        
-        {
-            "durationUnit": "minute",
-            "duration": 20,
-            "arrivalUnit": "second",
-            "arrival": 6.6
+            "arrival": 1
         }
     ]
 }

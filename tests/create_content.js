@@ -3,7 +3,7 @@
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
- * 
+ *
  *     http://www.osedu.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -13,8 +13,11 @@
  * permissions and limitations under the License.
  */
 
+var Container = require('../lib/api/container');
 var Content = require('../lib/api/content');
 var User = require('../lib/api/user');
+
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user visiting
@@ -28,10 +31,10 @@ module.exports.test = function(runner, probability) {
     // Create a new session.
     var session = runner.addSession('create_content', probability);
 
-    var user = User.login(session, '%%_users_username%%', '%%_users_password%%');
+    Login.visitLoginRedirect(session, '%%_users_username%%', '%%_users_password%%');
 
     // The user goes to his library.
-    User.library(session, user.id);
+    User.contentLibrary(session, '%%_current_user_id%%');
 
     // He selects a new file to upload..
     session.think(4);
@@ -40,5 +43,5 @@ module.exports.test = function(runner, probability) {
     Content.createFile(session, 'default');
 
     // That's it for now
-    User.logout(session);
-}
+    Container.logout(session);
+};

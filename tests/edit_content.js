@@ -13,9 +13,12 @@
  * permissions and limitations under the License.
  */
 
+var Container = require('../lib/api/container');
 var Content = require('../lib/api/content');
-var GeneralInterest = require('./lib/general_interest_public');
 var User = require('../lib/api/user');
+
+var GeneralInterest = require('./lib/general_interest_public');
+var Login = require('./lib/login');
 
 /**
  * Generate a user session against the runner that similuates an authenticated user editing a content item
@@ -28,33 +31,31 @@ module.exports.test = function(runner, probability) {
     // Create a new session.
     var session = runner.addSession('edit_content', probability);
 
-    var user = User.login(session, '%%_manage_content_groups_manager_username%%', '%%_manage_content_groups_manager_password%%');
+    Login.visitLoginRedirect(session, '%%_manage_resources_manager_username%%', '%%_manage_resources_manager_password%%');
 
     // Browse around a bit
     GeneralInterest.doGeneralInterestBrowseContent(session, 0);
     session.think(4);
 
-    var contentId = '%%_manage_content_groups_content_id%%';
+    var contentId = '%%_manage_resources_content_id%%';
 
     // Find a group and make a couple updates
     Content.profile(session, contentId);
     session.think(3);
 
     var updates = {'displayName': 'displayName changed by tsung test'};
-    Content.update(session, contentId, updates);
-    Content.profile(session, contentId);
+    Content.detailsUpdate(session, contentId, updates);
     session.think(5);
 
     updates = {'displayName': 'displayName changed a second time by tsung test'};
-    Content.update(session, contentId, updates);
-    Content.profile(session, contentId);
+    Content.detailsUpdate(session, contentId, updates);
     session.think(2);
 
     // Come back around and edit a bit more
     updates = {'displayName': '%%_random_string_short%%'};
-    Content.update(session, contentId, updates);
+    Content.detailsUpdate(session, contentId, updates);
     Content.profile(session, contentId);
     session.think(5);
 
-    User.logout(session);
+    Container.logout(session);
 };
