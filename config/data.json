@@ -52,6 +52,21 @@
             ],
             "order": "random"
         },
+        "public_discussions": {
+            "vars": [
+                "public_discussions_0",
+                "public_discussions_1",
+                "public_discussions_2",
+                "public_discussions_3",
+                "public_discussions_4",
+                "public_discussions_5",
+                "public_discussions_6",
+                "public_discussions_7",
+                "public_discussions_8",
+                "public_discussions_9"
+            ],
+            "order": "random"
+        },
         "private_groups": {
             "vars": [
                 "private_groups_user_username",
@@ -84,6 +99,29 @@
                 "private_content_access_depth1_3",
                 "private_content_access_depth2_0",
                 "private_content_access_depth2_1"
+            ],
+            "order": "random"
+        },
+        "private_discussions": {
+            "vars": [
+                "private_discussions_user_username",
+                "private_discussions_user_password",
+                "private_discussions_access_depth0_0",
+                "private_discussions_access_depth0_1",
+                "private_discussions_access_depth0_2",
+                "private_discussions_access_depth0_3",
+                "private_discussions_access_depth0_4",
+                "private_discussions_access_depth0_5",
+                "private_discussions_access_depth0_6",
+                "private_discussions_access_depth0_7",
+                "private_discussions_access_depth0_8",
+                "private_discussions_access_depth0_9",
+                "private_discussions_access_depth1_0",
+                "private_discussions_access_depth1_1",
+                "private_discussions_access_depth1_2",
+                "private_discussions_access_depth1_3",
+                "private_discussions_access_depth2_0",
+                "private_discussions_access_depth2_1"
             ],
             "order": "random"
         },

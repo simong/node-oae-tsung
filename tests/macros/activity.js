@@ -1,10 +1,10 @@
 /*
- * Copyright 2012 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -15,10 +15,48 @@
 
 var _ = require('underscore');
 
+var ApiUtil = require('../../lib/api/util');
+var Container = require('../../lib/api/container');
 var Content = require('../../lib/api/content');
 var Group = require('../../lib/api/group');
 var Discussion = require('../../lib/api/discussion');
 var User = require('../../lib/api/user');
+
+/**
+ * The currently authenticated user browses their activities and notifications for a little bit.
+ *
+ * @param  {Session}    session                     A Tsung session
+ * @param  {Boolean}    [pageLoad]                  If the initial activity load should be a full page load. Default: `true`
+ * @param  {Number}     [activityIterations]        The number of iterations of activity scrolling to do (including initial load). Default: 4
+ * @param  {Number}     [notificationIterations]    The number of iterations of notification scrolling to do (including initial load). Default: 2
+ */
+var browse = module.exports.browse = function(session, pageLoad, activityIterations, notificationIterations) {
+    activityIterations = isNaN(parseInt(activityIterations, 10)) ? 4 : activityIterations;
+    notificationIterations = isNaN(parseInt(notificationIterations, 10)) ? 2 : notificationIterations;
+
+    var i = null;
+
+    if (activityIterations) {
+        // Read the activities for a bit
+        User.activity(session, '%%_current_user_id%%', {'pageLoad': pageLoad});
+        session.think(8, true);
+
+        for (i = 1; i < activityIterations; i++) {
+            User.activityScroll(session, '%%_current_user_id%%');
+            session.think(7, true);
+        }
+    }
+
+    if (notificationIterations) {
+        Container.notifications(session);
+        session.think(4, true);
+
+        for (i = 1; i < notificationIterations; i++) {
+            Container.notificationsScroll(session);
+            session.think(4, true);
+        }
+    }
+};
 
 /**
  * A content item was shared with a user, and this method will simulate the user visiting that content
@@ -45,7 +83,7 @@ var checkSharedContent = module.exports.checkSharedContent = function(session, c
     _.each(commentBodies, function(body) {
         // Pause to think and write the comment before posting
         session.think(_getCommentThinkTime(body));
-        Content.postComment(session, contentId, body);
+        Content.comment(session, contentId, body);
 
         // Scroll once after the comment
         session.think(4, true);
@@ -64,7 +102,6 @@ var checkSharedContent = module.exports.checkSharedContent = function(session, c
  * @param  {String}     [replyBody]         The body of the reply to write. If not specified, no reply will be made
  */
 var checkContentComment = module.exports.checkContentComment = function(session, contentId, readBody, commentPageNum, replyBody) {
-    reply = (reply === true) || false;
     commentPageNum = commentPageNum || 1;
 
     // User loads the content profile and immediately jumps to the comments
@@ -84,7 +121,8 @@ var checkContentComment = module.exports.checkContentComment = function(session,
     // Now type a reply if specified
     if (replyBody) {
         session.think(_getMessageTypeTime(replyBody));
-        Content.postComment(session, contentId, replyBody);
+        Content.comment(session, contentId, replyBody);
+        session.think(2, true);
     }
 };
 
@@ -156,17 +194,20 @@ var checkDiscussionMessage = module.exports.checkDiscussionMessage = function(se
 };
 
 /**
- * A user has been added to a group, so they are going to visit the group and see what it is all about.
+ * A user has been added to a group, so they are going to visit the group and see what it is all about. This should only be for a group
+ * to which the user has access.
  *
- * @param  {Session}    session                 The Tsung user session
- * @param  {String}     groupId                 The id of the group to check. The id of this group *must* be the id of a group in which the user in session is a member (or manager)
- * @param  {Number}     [activityPages]         The number of pages of activities to browse on the group profile (Default: 1)
- * @param  {Number}     [libraryPages]          The number of pages of library to browse on the group profile (Default: 0)
- * @param  {Number}     [membersPages]          The number of pages of members to browse on the group profile (Default: 0)
+ * @param  {Session}    session                     The Tsung user session
+ * @param  {String}     groupId                     The id of the group to check. The id of this group *must* be the id of a group in which the user in session is a member (or manager)
+ * @param  {Number}     [activityPages]             The number of pages of activities to browse on the group profile (Default: 1)
+ * @param  {Number}     [contentLibraryPages]       The number of pages of content library to browse on the group profile (Default: 0)
+ * @param  {Number}     [discussionLibraryPages]    The number of pages of discussion library to browse on the group profile (Default: 0)
+ * @param  {Number}     [membersPages]              The number of pages of members to browse on the group profile (Default: 0)
  */
-var checkGroupAddMember = module.exports.checkGroupAddMember = function(session, groupId, activityPages, libraryPages, membersPages) {
+var checkGroupAddMember = module.exports.checkGroupAddMember = function(session, groupId, activityPages, contentLibraryPages, discussionLibraryPages, membersPages) {
     activityPages = activityPages || 1;
-    libraryPages = librarypages || 0;
+    contentLibraryPages = contentLibraryPages || 0;
+    discussionLibraryPages = discussionLibraryPages || 0;
     membersPages = membersPages || 0;
 
     var i = 0;
@@ -180,13 +221,24 @@ var checkGroupAddMember = module.exports.checkGroupAddMember = function(session,
         session.think(7, true);
     }
 
-    // Browse the library pages if specified
-    if (libraryPages) {
-        Group.library(session, groupId);
+    // Browse the content library pages if specified
+    if (contentLibraryPages) {
+        Group.contentLibrary(session, groupId);
         session.think(7, true);
 
-        for (i = 1; i < libraryPages; i++) {
-            Group.libraryScroll(session, groupId);
+        for (i = 1; i < contentLibraryPages; i++) {
+            Group.contentLibraryScroll(session, groupId);
+            session.think(7, true);
+        }
+    }
+
+    // Browse the discussion library pages if specified
+    if (discussionLibraryPages) {
+        Group.discussionLibrary(session, groupId);
+        session.think(7, true);
+
+        for (i = 1; i < discussionLibraryPages; i++) {
+            Group.discussionLibraryScroll(session, groupId);
             session.think(7, true);
         }
     }
@@ -195,7 +247,7 @@ var checkGroupAddMember = module.exports.checkGroupAddMember = function(session,
         Group.members(session, groupId);
         session.think(7, true);
 
-        for (i = 1; i < libraryPages; i++) {
+        for (i = 1; i < membersPages; i++) {
             Group.membersScroll(session, groupId);
             session.think(7, true);
         }
@@ -228,7 +280,7 @@ var _getMessageTypeTime = function(body) {
     }
 
     // Every 2 characters = 1s for think+type ?
-    session.think(Math.round(length / 2));
+    return Math.round(length / 2);
 };
 
 
@@ -257,6 +309,6 @@ var _getReadTime = function(body) {
     }
 
     // Every 8 characters = 1s for read ?
-    session.think(Math.round(length / 8));
+    return Math.round(length / 8);
 };
 
