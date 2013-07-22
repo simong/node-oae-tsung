@@ -14,7 +14,9 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 var _ = require('underscore');
+var colors = require('colors');
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
@@ -24,14 +26,16 @@ var wrench = require('wrench');
 var TsungUtil = require('./lib/util');
 
 var printErr = function(err, msg) {
-    if (msg && msg.indexOf('Maximum call stack size exceeded')) {
+    if (err.message && err.message.indexOf('stack') !== -1) {
         console.error('ERROR: The maximum call stack size exceeded, probably because your tsung.xml file is huge. Run again with option --stack_size=2048 (or more if necessary). See node --v8-options for more info on stack_size');
     } else {
-        console.log(msg);
-        console.log(err);
-        var stack = err.stack || new Error().stack;
-        console.log(stack);
+        console.error(msg);
+        console.error(err.message);
     }
+
+    console.error(err.stack || new Error().stack);
+
+    process.exit(1);
 };
 
 process.on('uncaughtException', function(err) {
@@ -72,13 +76,6 @@ if (argv.h) {
     return console.log(optimist.help());
 }
 
-var config = {
-    'dtdLocation': argv.d,
-    'logLevel': 'notice',
-    'version': '1.0',
-    'dumpTraffic': false
-};
-
 // parse the answers if specified
 var answers = null;
 if (argv.a) {
@@ -92,6 +89,13 @@ if (argv.a) {
         process.exit(1);
     }
 }
+
+var config = {
+    'dtdLocation': argv.d,
+    'logLevel': 'notice',
+    'version': '1.0',
+    'dumpTraffic': answers.dumpTraffic
+};
 
 var outputRoot = argv.o;
 var scriptsDir = argv.s;
@@ -116,7 +120,7 @@ var validateSession = function() {
     if (scriptsDir && !fs.existsSync(batchCheck)) {
         throw new Error('The source script directory does not even have one batch of users (' + batchCheck + ' does not exist).');
     }
-}
+};
 
 /**
  * Parses all the data format files from the specified data directory. There should be a number of files with extension
@@ -197,7 +201,7 @@ var promptSuite = function(callback) {
             callback();
         });
     });
-}
+};
 
 /**
  * Prompts the user for the tsung clients from which the performance test will be run.
@@ -214,7 +218,7 @@ var promptClient = function(callback) {
         runner.addClient(answer, true, 10000);
         callback();
     });
-}
+};
 
 /**
  * Prompts the user for the servers that will be tested by tsung.
@@ -276,13 +280,13 @@ var promptPhases = function(callback, i) {
             if (!durationUnit || !_.contains(validUnits, durationUnit)) {
                 console.log('Invalid duration unit: %s', durationUnit);
                 process.exit(1);
-            } else if (!duration || parseInt(duration) <= 0) {
+            } else if (!duration || parseInt(duration, 10) <= 0) {
                 console.log('Invalid duration time: %s', duration);
                 process.exit(1);
             } else if (!arrivalUnit || !_.contains(validUnits, arrivalUnit)) {
                 console.log('Invalid arrivalUnit: %s', arrivalUnit);
                 process.exit(1);
-            } else if (!arrival || isNaN(arrival) || parseInt(arrival) < 0) {
+            } else if (!arrival || isNaN(arrival) || parseInt(arrival, 10) < 0) {
                 console.log('Invalid arrival time: %s', arrival);
                 process.exit(1);
             } else {
@@ -391,7 +395,7 @@ promptSuite(function() {
                             if (err) {
                                 return printErr(err, 'Error packaging up the test runner.');
                             }
-                            console.log('Test successfully generated in %s', outputRoot);
+                            console.log('Test successfully generated in %s'.green, outputRoot);
                         });
                     });
                 });

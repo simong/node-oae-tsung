@@ -1,2 +1,0 @@
-general_interest_term_anon
-general_interest_term_auth

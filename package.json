@@ -3,9 +3,8 @@
     "version": "0.0.1",
     "main": "main.js",
     "dependencies": {
+        "colors": "latest",
         "mkdirp": "latest",
-        "mu2": "latest",
-        "handlebars": "latest",
         "optimist": "latest",
         "underscore": "latest",
         "wrench": "1.4.1"
