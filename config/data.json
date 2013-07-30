@@ -193,6 +193,15 @@
         },
         "random_string_long": {
             "length": 500
+        },
+        "session_id": {
+            "length": 16
+        }
+    },
+    "numbers": {
+        "server_id": {
+            "start": 1,
+            "end": 999
         }
     },
     "uploadableFiles": {

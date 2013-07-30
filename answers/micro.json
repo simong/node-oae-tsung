@@ -1,14 +1,14 @@
 {
     "suite": "standard",
     "clients": ["localhost"],
-    "servers": ["localhost"],
+    "servers": ["cam.oae.com"],
     "dumpTraffic": true,
     "phases": [
         {
             "durationUnit": "second",
-            "duration": 100,
+            "duration": 120,
             "arrivalUnit": "second",
-            "arrival": 1
+            "arrival": 4
         }
     ]
 }

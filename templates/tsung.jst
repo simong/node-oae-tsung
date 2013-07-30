@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE tsung SYSTEM "<%= dtdLocation %>" []>
-<tsung loglevel="<%= logLevel %>" version="<%= version %>" dumptraffic="<%= dumpTraffic %>">
+<tsung loglevel="<%= logLevel %>" version="<%= version %>">
 
   <!-- Each client that will be running Tsung during the test -->
   <clients>
@@ -72,7 +72,7 @@
   -->
   <sessions>
     <% _.each(sessions, function(session) { %>
-    <session name="<%= session.name %>" probability="<%= session.probability %>" type="ts_http">
+    <session name="<%= session.name %>" probability="<%= session.probability %>" type="ts_http" bidi="true">
 
       <!-- File servers for the session -->
       <% _.each(fileServers, function(fileServer) { %>
@@ -98,9 +98,14 @@
       <% }); %>
 
       <!-- Session actions -->
-      <% _.each(session.actions, function(action) { %>
+      <% 
+        var hasWebSocket = false;
+        _.each(session.actions, function(action) {
+      %>
+
       <% if (action.type === 'transaction') { %>
       <transaction name="<%= action.name %>">
+
         <% _.each(action.requests, function(request) { %>
         <% if (request.type === 'request') { %>
         <request subst="<%= request.subst %>">
@@ -113,6 +118,7 @@
             <% } %>
           </http>
         </request>
+
         <% } else if (request.type === 'if') { %>
         <if var="<%= request.ifVar %>" eq="<%= request.ifEq %>">
           <% _.each(request.requests, function(request) { %>
@@ -120,7 +126,7 @@
             <% _.each(request.variables, function(variable) { %>
             <dyn_variable name="<%= variable.name %>" <%= variable.attr %>="<%= variable.expression %>"/>
             <% }); %>
-            <http url="<%= request.url %>" method="<%= request.method %>" version="1.1" <% if (request.content) { %>contents="<%= request.content %>" <% } %> <% if (request.fromFile) { %>contents_from_file="<%= request.fromFile.path %>" content_type="<%= request.fromFile.type %>" <% } %>>
+            <http url="http://<%= servers[0].host %><%= request.url %>" method="<%= request.method %>" version="1.1" <% if (request.content) { %>contents="<%= request.content %>" <% } %> <% if (request.fromFile) { %>contents_from_file="<%= request.fromFile.path %>" content_type="<%= request.fromFile.type %>" <% } %>>
               <% if (request.referer) { %>
               <http_header name="Referer" value="<%= request.referer %>" />
               <% } %>
@@ -128,13 +134,76 @@
           </request>
           <% }); %>
         </if>
+
         <% } %>
+
         <% }); %>
       </transaction>
+
+
+        <% if (action.push) { %>
+          <!-- If we need to setup a websocket in this action we do it outside of the tsung transaction -->
+
+          <!-- We need to change the session type to websocket -->
+          <change_type new_type="ts_websocket" host="<%= servers[0].host %>" port="80" server_type="tcp" store="true" <% if (hasWebSocket) { %>restore="true" <% } %>bidi="true" />
+
+          <!-- We need to check if we had another websocket first though, so we can close it. -->
+          <% if (hasWebSocket) { %>
+            <request>
+                <websocket type="close"></websocket>
+            </request>
+
+            <!-- It takes 2 seconds before the websocket gets set up *waves hand* -->
+            <thinktime value="2" random="true" />
+          <%
+            }
+            hasWebSocket = true;
+          %>
+
+          <!-- create the socket -->
+          <request subst="true">
+            <websocket type="connect" path="/api/push/%%_server_id%%/%%_session_id%%/websocket"></websocket>
+          </request>
+
+          <% if (session.loggedIn) { %>
+            <!-- Authenticate ourselves with the socket -->
+            <request subst="true">
+              <websocket type="message">"{\"name\":\"authentication\",\"id\": \"foo\", \"payload\":{\"userId\":\"%%_current_user_id%%\",\"tenantAlias\": \"%%_current_user_tenant_alias%%\" ,\"signature\":{\"signature\":\"%%_current_user_signature_signature%%\",\"expires\":\"%%_current_user_signature_expires%%\"}}}"</websocket>
+            </request>
+
+            <!-- We need to wait till the server accepted our authentication request. Ideally we'd just wait till we get the OK response, but there is no such thing in tsung -->
+            <thinktime value="2" random="true" />
+
+            <!-- All pages require the notifications feed -->
+            <request subst="true">
+              <websocket type="message">"{\"name\":\"subscribe\",\"id\": \"bar\",\"payload\":{\"format\":\"activitystreams\",\"stream\":{\"resourceId\": \"%%_current_user_id%%\", \"streamType\": \"notification\"},\"token\":{\"signature\":\"%%_current_user_signature_signature%%\",\"expires\":\"%%_current_user_signature_expires%%\"}}}"</websocket>
+            </request>
+
+            <!-- Wait a little bit -->
+            <thinktime value="2" random="true" />
+          <% } %>
+
+          <!-- Switch back to http -->
+          <change_type new_type="ts_http" host="<%= servers[0].host %>" port="80" server_type="tcp" store="true" restore="true" bidi="true" />
+
+        <% } %>
+
+
+
       <% } else if (action.type === 'think') { %>
-      <thinktime value="<%= action.seconds %>" random="<%= action.isRandom %>"/>
+        <thinktime value="<%= action.seconds %>" random="<%= action.isRandom %>"/>
       <% } %>
       <% }); %>
+
+
+      <% if (hasWebSocket) { %>
+        <change_type new_type="ts_websocket" host="<%= servers[0].host %>" port="80" server_type="tcp" store="true" restore="true" bidi="true" />
+
+        <request>
+          <websocket type="close"></websocket>
+        </request>
+      <% } %>
+
     </session>
     <% }); %>
   </sessions>
