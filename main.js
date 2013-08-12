@@ -48,6 +48,7 @@ var optimist = require('optimist')
         .alias('h', 'help')
         .describe('h', 'Show this help information.')
 
+        .demand('s')
         .alias('s', 'source-dir')
         .describe('s', 'The directory that contains the source data used to load content into the target system.')
 
@@ -59,6 +60,7 @@ var optimist = require('optimist')
         .describe('o', 'The directory in which the output Tsung package should be generated.')
         .default('o', util.format('./tsung-%s', new Date().getTime()))
 
+        .demand('a')
         .alias('a', 'answers')
         .describe('a', 'A JSON file containing the answers to the interactive prompt questions.')
 

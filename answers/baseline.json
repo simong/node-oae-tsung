@@ -1,0 +1,14 @@
+{
+    "suite": "standard",
+    "clients": ["localhost"],
+    "servers": ["oae.oae-performance.oaeproject.org"],
+    "dumpTraffic": false,
+    "phases": [
+        {
+            "durationUnit": "minute",
+            "duration": 10,
+            "arrivalUnit": "second",
+            "arrival": 3.1
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "suite": "standard",
+    "clients": ["localhost"],
+    "servers": ["localhost"],
+    "dumpTraffic": true,
+    "phases": [
+        {
+            "durationUnit": "second",
+            "duration": 100,
+            "arrivalUnit": "second",
+            "arrival": 1
+        }
+    ]
+}
