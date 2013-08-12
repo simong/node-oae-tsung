@@ -66,7 +66,6 @@ var optimist = require('optimist')
 
         .alias('d', 'dtd')
         .describe('d', 'The location of the Tsung XML DTD.')
-        .default('d', '/opt/local/share/tsung/tsung-1.0.dtd')
 
         .alias('m', 'max-users')
         .describe('m', 'The max number of users to allow at one time.')
