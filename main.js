@@ -93,8 +93,8 @@ if (argv.a) {
 }
 
 var config = {
-    'dtdLocation': argv.d,
-    'logLevel': 'notice',
+    'dtdLocation': argv.d || answers.dtdLocation,
+    'logLevel': answers.logLevel || 'notice',
     'version': '1.0',
     'dumpTraffic': answers.dumpTraffic
 };
