@@ -16,6 +16,14 @@
     <% }); %>
   </servers>
 
+  <% if (monitoring && monitoring.length > 0) { %>
+  <monitoring>
+    <% _.each(monitoring, function(monitor) { %>
+    <monitor host="<%= monitor %>" type="munin" />
+    <% }); %>
+  </monitoring>
+  <% } %>
+
   <!-- Describe how load will be ramped up to your application over time -->
   <load>
     <% _.each(arrivalPhases, function(arrivalPhase) { %>

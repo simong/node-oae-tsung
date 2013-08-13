@@ -95,7 +95,8 @@ var config = {
     'dtdLocation': argv.d || answers.dtdLocation,
     'logLevel': answers.logLevel || 'notice',
     'version': '1.0',
-    'dumpTraffic': answers.dumpTraffic
+    'dumpTraffic': answers.dumpTraffic,
+    'monitoring': answers.monitoring
 };
 
 var outputRoot = argv.o;

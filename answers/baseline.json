@@ -10,5 +10,14 @@
             "arrivalUnit": "second",
             "arrival": 3.1
         }
+    ],
+    "monitoring": [
+        "web0",
+        "app0", "app1", "app2", "app3",
+        "activity0", "activity1", "activity2",
+        "pp0", "pp1", "pp2",
+        "cache0", "activity-cache0",
+        "db0", "db1", "db2",
+        "search0", "search1"
     ]
 }
